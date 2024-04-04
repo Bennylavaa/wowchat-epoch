@@ -25,11 +25,11 @@
 45,(Deprecated) Explore Northrend
 46,World Explorer
 49,Alterac Valley victories
-50,Eye of the Storm victories
+50,Gillijim's Isle victories
 51,Arathi Basin victories
 52,Warsong Gulch battles
 53,Alterac Valley battles
-54,Eye of the Storm battles
+54,Gillijim's Isle battles
 55,Arathi Basin battles
 56,Deaths in Warsong Gulch
 57,Deaths in Alterac Valley
@@ -50,7 +50,7 @@
 105,Warsong Gulch victories
 107,Creatures killed
 108,Critters killed
-110,Lich King 5-player boss killed the most
+110,(Deprecated) Lich King 5-player boss killed the most
 112,Deaths from drowning
 113,Deaths from fatigue
 114,Deaths from falling
@@ -140,7 +140,7 @@
 272,Torch Juggler
 273,On Metzen!
 275,Veteran Nanny
-277,Tis the Season
+277,'Tis the Season
 279,Simply Abominable
 281,First Aid skill
 283,The Masquerade
@@ -157,9 +157,9 @@
 319,Duels won
 320,Duels lost
 321,Total raid and dungeon deaths
-322,Total deaths to Lich King dungeon bosses
-323,Total deaths to Lich King 10-player raid bosses
-324,Total deaths to Lich King 25-player raid bosses
+322,(Deprecated) Total deaths to Lich King dungeon bosses
+323,(Deprecated) Total deaths to Lich King 10-player raid bosses
+324,(Deprecated) Total deaths to Lich King 25-player raid bosses
 326,Gold from quest rewards
 328,Total gold acquired
 329,Auctions posted
@@ -251,7 +251,7 @@
 453,Sergeant
 454,Scout
 456,Realm First! Obsidian Slayer
-457,Realm First! Level 60
+457,Realm First! Level 80
 458,Realm First! Level 80 Rogue
 459,Realm First! Level 80 Warrior
 460,Realm First! Level 80 Mage
@@ -341,7 +341,7 @@
 582,(Deprecated) Alterac Valley All-Star
 583,(Deprecated) Arathi Basin All-Star
 584,(Deprecated) Arathi Basin Assassin
-585,Eye of the Storm flags captured
+585,Gillijim's Isle flags captured
 586,Warsong Gulch flags returned
 587,(Deprecated) Stormy Assassin
 588,Total Honorable Kills
@@ -472,7 +472,7 @@
 735,Working Day and Night
 736,Explore Mulgore
 750,Explore The Barrens
-752,Deaths in Naxxramas
+752,(Deprecated) Deaths in Naxxramas
 753,Average gold earned per day
 759,Average daily quests completed per day
 760,Explore Alterac Mountains
@@ -592,8 +592,8 @@
 921,Gold from vendors
 922,Mana potions consumed
 923,Elixirs consumed
-924,Most Northrend factions at Exalted
-925,Most Outland factions at Exalted
+924,(Deprecated) Most Northrend factions at Exalted
+925,(Deprecated) Most Outland factions at Exalted
 926,Most Horde factions at Exalted
 927,Equipped epic items in item slots
 928,Extra bank slots purchased
@@ -619,7 +619,7 @@
 952,(Deprecated) Mercenary of Sholazar
 953,(Deprecated) Guardian of Cenarius
 955,Hydraxian Waterlords
-956,Brood of Nozdormu
+956,(Deprecated) Brood of Nozdormu
 957,Hero of the Zandalar Tribe
 958,(Deprecated) Sworn to the Deathsworn
 959,(Deprecated) The Scale of the Sands
@@ -687,29 +687,29 @@
 1065,Total waves
 1066,Total times LOL'd
 1067,Total times playing world's smallest violin
-1068,Keli'dan the Breaker kills (The Blood Furnace)
-1069,Nexus-Prince Shaffar kills (Mana Tombs)
-1070,Epoch Hunter kills (The Escape From Durnholde)
-1071,Quagmirran kills (Slave Pens)
-1072,Black Stalker kills (Underbog)
-1073,Exarch Maladaar kills (Auchenai Crypts)
-1074,Talon King Ikiss kills (Sethekk Halls)
-1075,Murmur kills (Shadow Labyrinth)
-1076,Aeonus kills (Opening of the Dark Portal)
-1077,Warlord Kalithresh kills (The Steamvault)
-1078,Warchief Kargath Bladefist kills (The Shattered Halls)
-1079,Pathaleon the Calculator kills (The Mechanar)
-1080,Warp Splinter kills (The Botanica)
-1081,Harbinger Skyriss kills (The Arcatraz)
-1082,Kael'thas Sunstrider kills (Magister's Terrace)
-1083,Prince Malchezaar kills (Karazhan)
-1084,Zul'jin kills (Zul'Aman)
-1085,Gruul kills (Gruul's Lair)
-1086,Magtheridon kills (Magtheridon's Lair)
-1087,Lady Vashj kills (Serpentshrine Cavern)
-1088,Kael'thas Sunstrider kills (Tempest Keep)
-1089,Illidan Stormrage kills (The Black Temple)
-1090,Kil'jaeden kills (Sunwell Plateau)
+1068,(Deprecated) Keli'dan the Breaker kills (The Blood Furnace)
+1069,(Deprecated) Nexus-Prince Shaffar kills (Mana Tombs)
+1070,(Deprecated) Epoch Hunter kills (The Escape From Durnholde)
+1071,(Deprecated) Quagmirran kills (Slave Pens)
+1072,(Deprecated) Black Stalker kills (Underbog)
+1073,(Deprecated) Exarch Maladaar kills (Auchenai Crypts)
+1074,(Deprecated) Talon King Ikiss kills (Sethekk Halls)
+1075,(Deprecated) Murmur kills (Shadow Labyrinth)
+1076,(Deprecated) Aeonus kills (Opening of the Dark Portal)
+1077,(Deprecated) Warlord Kalithresh kills (The Steamvault)
+1078,(Deprecated) Warchief Kargath Bladefist kills (The Shattered Halls)
+1079,(Deprecated) Pathaleon the Calculator kills (The Mechanar)
+1080,(Deprecated) Warp Splinter kills (The Botanica)
+1081,(Deprecated) Harbinger Skyriss kills (The Arcatraz)
+1082,(Deprecated) Kael'thas Sunstrider kills (Magister's Terrace)
+1083,(Deprecated) Prince Malchezaar kills (Karazhan)
+1084,(Deprecated) Zul'jin kills (Zul'Aman)
+1085,(Deprecated) Gruul kills (Gruul's Lair)
+1086,(Deprecated) Magtheridon kills (Magtheridon's Lair)
+1087,(Deprecated) Lady Vashj kills (Serpentshrine Cavern)
+1088,(Deprecated) Kael'thas Sunstrider kills (Tempest Keep)
+1089,(Deprecated) Illidan Stormrage kills (The Black Temple)
+1090,(Deprecated) Kil'jaeden kills (Sunwell Plateau)
 1091,Edwin VanCleef kills (Deadmines)
 1092,Archmage Arugal kills (Shadowfang Keep)
 1093,Scarlet Commander Mograine kills (Scarlet Monastery)
@@ -719,18 +719,18 @@
 1097,Baron Rivendare kills (Stratholme)
 1098,Onyxia kills (Onyxia's Lair)
 1099,Ragnaros kills (Molten Core)
-1100,Nefarian kills (Blackwing Lair)
-1101,C'Thun kills (Temple of Ahn'Qiraj)
-1102,Hakkar kills (Zul'Gurub)
-1103,Lich King 5-player dungeons completed (final boss killed)
-1104,Lich King 10-player raids completed (final boss killed)
-1106,Deaths in Eye of the Storm
+1100,(Deprecated) Nefarian kills (Blackwing Lair)
+1101,(Deprecated) C'Thun kills (Temple of Ahn'Qiraj)
+1102,(Deprecated) Hakkar kills (Zul'Gurub)
+1103,(Deprecated) Lich King 5-player dungeons completed (final boss killed)
+1104,(Deprecated) Lich King 10-player raids completed (final boss killed)
+1106,Deaths in Gillijim's Isle
 1107,Deaths in 3v3
 1108,Deaths in 5v5
 1109,5v5 Arena Honorable Kills
 1110,3v3 Arena Honorable Kills
 1111,2v2 Arena Honorable Kills
-1112,Eye of the Storm Honorable Kills
+1112,Gillijim's Isle Honorable Kills
 1113,Alterac Valley Honorable Kills
 1114,Arathi Basin Honorable Kills
 1115,Warsong Gulch Honorable Kills
@@ -790,25 +790,25 @@
 1206,To All The Squirrels I've Loved Before
 1225,(Deprecated) Outland Angler
 1229,Revived by druids
-1231,Keristrasza kills (The Nexus)
-1232,Anub'arak kills (Azjol-Nerub)
-1233,Herald Volazj kills (Ahn'kahet: The Old Kingdom)
-1234,The Prophet Tharon'ja kills (Drak'Tharon Keep)
-1235,Cyanigosa kills (The Violet Hold)
-1236,Gal'darah kills (Gundrak)
-1237,Sjonnir the Ironshaper kills (Halls of Stone)
-1238,Loken kills (Halls of Lightning)
-1239,Ley-Guardian Eregos kills (The Oculus)
-1240,King Ymiron kills (Utgarde Pinnacle)
-1241,Mal'Ganis defeated (Caverns of Time: Stratholme)
-1242,Ingvar the Plunderer kills (Utgarde Keep)
+1231,(Deprecated) Keristrasza kills (The Nexus)
+1232,(Deprecated) Anub'arak kills (Azjol-Nerub)
+1233,(Deprecated) Herald Volazj kills (Ahn'kahet: The Old Kingdom)
+1234,(Deprecated) The Prophet Tharon'ja kills (Drak'Tharon Keep)
+1235,(Deprecated) Cyanigosa kills (The Violet Hold)
+1236,(Deprecated) Gal'darah kills (Gundrak)
+1237,(Deprecated) Sjonnir the Ironshaper kills (Halls of Stone)
+1238,(Deprecated) Loken kills (Halls of Lightning)
+1239,(Deprecated) Ley-Guardian Eregos kills (The Oculus)
+1240,(Deprecated) King Ymiron kills (Utgarde Pinnacle)
+1241,(Deprecated) Mal'Ganis defeated (Caverns of Time: Stratholme)
+1242,(Deprecated) Ingvar the Plunderer kills (Utgarde Keep)
 1243,Fish Don't Leave Footprints
 1244,Well Read
 1248,Plethora of Pets
 1250,"Shop Smart, Shop Pet...Smart"
 1251,Not In My House
 1252,Supreme Defender
-1253,Raised as a ghoul
+1253,(Deprecated) Raised as a ghoul
 1254,(Deprecated) Friend or Fowl?
 1255,Scrooge
 1257,The Scavenger
@@ -872,40 +872,40 @@
 1358,(Deprecated) Nothing Boring About Borean
 1359,(Deprecated) Might of Dragonblight
 1360,(Deprecated) Loremaster of Northrend
-1361,Anub'Rekhan kills (Naxxramas 10 player)
-1362,Grand Widow Faerlina kills (Naxxramas 10 player)
-1363,Maexxna kills (Naxxramas 10 player)
-1364,Patchwerk kills (Naxxramas 10 player)
-1365,Noth the Plaguebringer kills (Naxxramas 10 player)
-1366,Gothik the Harvester kills (Naxxramas 10 player)
-1367,Patchwerk kills (Naxxramas 25 player)
-1368,Anub'Rekhan kills (Naxxramas 25 player)
-1369,Heigan the Unclean kills (Naxxramas 10 player)
-1370,Loatheb kills (Naxxramas 10 player)
-1371,Grobbulus kills (Naxxramas 10 player)
-1372,Gluth kills (Naxxramas 10 player)
-1373,Thaddius kills (Naxxramas 10 player)
-1374,Instructor Razuvious kills (Naxxramas 10 player)
-1375,Four Horsemen kills (Naxxramas 10 player)
-1376,Sapphiron kills (Naxxramas 10 player)
-1377,Kel'Thuzad kills (Naxxramas 10 player)
-1378,Gluth kills (Naxxramas 25 player)
-1379,Gothik the Harvester kills (Naxxramas 25 player)
-1380,Grand Widow Faerlina kills (Naxxramas 25 player)
-1381,Grobbulus kills (Naxxramas 25 player)
-1382,Heigan the Unclean kills (Naxxramas 25 player)
-1383,Four Horsemen kills (Naxxramas 25 player)
-1384,Instructor Razuvious kills (Naxxramas 25 player)
-1385,Loatheb kills (Naxxramas 25 player)
-1386,Maexxna kills (Naxxramas 25 player)
-1387,Noth the Plaguebringer kills (Naxxramas 25 player)
-1388,Thaddius kills (Naxxramas 25 player)
-1389,Sapphiron kills (Naxxramas 25 player)
-1390,Kel'Thuzad kills (Naxxramas 25 player)
-1391,Malygos kills (10 player)
-1392,Sartharion kills (Chamber of the Aspects 10 player)
-1393,Sartharion kills (Chamber of the Aspects 25 player)
-1394,Malygos kills (25 player)
+1361,(Deprecated) Anub'Rekhan kills (Naxxramas 10 player)
+1362,(Deprecated) Grand Widow Faerlina kills (Naxxramas 10 player)
+1363,(Deprecated) Maexxna kills (Naxxramas 10 player)
+1364,(Deprecated) Patchwerk kills (Naxxramas 10 player)
+1365,(Deprecated) Noth the Plaguebringer kills (Naxxramas 10 player)
+1366,(Deprecated) Gothik the Harvester kills (Naxxramas 10 player)
+1367,(Deprecated) Patchwerk kills (Naxxramas 25 player)
+1368,(Deprecated) Anub'Rekhan kills (Naxxramas 25 player)
+1369,(Deprecated) Heigan the Unclean kills (Naxxramas 10 player)
+1370,(Deprecated) Loatheb kills (Naxxramas 10 player)
+1371,(Deprecated) Grobbulus kills (Naxxramas 10 player)
+1372,(Deprecated) Gluth kills (Naxxramas 10 player)
+1373,(Deprecated) Thaddius kills (Naxxramas 10 player)
+1374,(Deprecated) Instructor Razuvious kills (Naxxramas 10 player)
+1375,(Deprecated) Four Horsemen kills (Naxxramas 10 player)
+1376,(Deprecated) Sapphiron kills (Naxxramas 10 player)
+1377,(Deprecated) Kel'Thuzad kills (Naxxramas 10 player)
+1378,(Deprecated) Gluth kills (Naxxramas 25 player)
+1379,(Deprecated) Gothik the Harvester kills (Naxxramas 25 player)
+1380,(Deprecated) Grand Widow Faerlina kills (Naxxramas 25 player)
+1381,(Deprecated) Grobbulus kills (Naxxramas 25 player)
+1382,(Deprecated) Heigan the Unclean kills (Naxxramas 25 player)
+1383,(Deprecated) Four Horsemen kills (Naxxramas 25 player)
+1384,(Deprecated) Instructor Razuvious kills (Naxxramas 25 player)
+1385,(Deprecated) Loatheb kills (Naxxramas 25 player)
+1386,(Deprecated) Maexxna kills (Naxxramas 25 player)
+1387,(Deprecated) Noth the Plaguebringer kills (Naxxramas 25 player)
+1388,(Deprecated) Thaddius kills (Naxxramas 25 player)
+1389,(Deprecated) Sapphiron kills (Naxxramas 25 player)
+1390,(Deprecated) Kel'Thuzad kills (Naxxramas 25 player)
+1391,(Deprecated) Malygos kills (10 player)
+1392,(Deprecated) Sartharion kills (Chamber of the Aspects 10 player)
+1393,(Deprecated) Sartharion kills (Chamber of the Aspects 25 player)
+1394,(Deprecated) Malygos kills (25 player)
 1396,(Deprecated) Elders of Northrend
 1400,Realm First! Magic Seeker
 1402,Realm First! Conqueror of Naxxramas
@@ -913,7 +913,7 @@
 1405,Realm First! Level 80 Blood Elf
 1406,Realm First! Level 80 Draenei
 1407,Realm First! Level 80 Dwarf
-1408,Realm First! Level 60 Human
+1408,Realm First! Level 80 Human
 1409,Realm First! Level 80 Night Elf
 1410,Realm First! Level 80 Orc
 1411,Realm First! Level 80 Tauren
@@ -938,14 +938,14 @@
 1456,Fish and other things caught
 1457,(Deprecated) Explore Crystalsong Forest
 1458,Continent with the most Honorable Kills
-1462,Badges of Justice acquired
+1462,(Deprecated) Badges of Justice acquired
 1463,Realm First! Northrend Vanguard
-1464,Emblems of Heroism acquired
-1465,Emblems of Valor acquired
+1464,(Deprecated) Emblems of Heroism acquired
+1465,(Deprecated) Emblems of Valor acquired
 1466,Most Alliance factions at Exalted
-1467,Lich King 5-player bosses killed
-1485,Lich King 5-player different bosses killed
-1486,Strand of the Ancients Honorable Kills
+1467,(Deprecated) Lich King 5-player bosses killed
+1485,(Deprecated) Lich King 5-player different bosses killed
+1486,(Deprecated) Strand of the Ancients Honorable Kills
 1487,Total Killing Blows
 1488,World Killing Blows
 1489,Continent with the most Killing Blows
@@ -957,23 +957,23 @@
 1495,Alterac Valley Killing Blows
 1496,Arathi Basin Killing Blows
 1497,Warsong Gulch Killing Blows
-1498,Eye of the Storm Killing Blows
-1499,Strand of the Ancients Killing Blows
-1500,Deaths in Strand of the Ancients
+1498,Gillijim's Isle Killing Blows
+1499,(Deprecated) Strand of the Ancients Killing Blows
+1500,(Deprecated) Deaths in Strand of the Ancients
 1501,Total deaths from other players
 1502,Quick Cap
-1504,Ingvar the Plunderer kills (Heroic Utgarde Keep)
-1505,Keristrasza kills (Heroic Nexus)
-1506,Anub'arak kills (Heroic Azjol-Nerub)
-1507,Herald Volazj kills (Heroic Ahn'kahet)
-1508,The Prophet Tharon'ja kills (Heroic Drak'Tharon Keep)
-1509,Cyanigosa kills (Heroic Violet Hold)
-1510,Gal'darah kills (Heroic Gundrak)
-1511,Sjonnir the Ironshaper kills (Heroic Halls of Stone)
-1512,Loken kills (Heroic Halls of Lightning)
-1513,Ley-Guardian Eregos kills (Heroic Oculus)
-1514,King Ymiron kills (Heroic Utgarde Pinnacle)
-1515,Mal'Ganis defeated (Heroic CoT: Stratholme)
+1504,(Deprecated) Ingvar the Plunderer kills (Heroic Utgarde Keep)
+1505,(Deprecated) Keristrasza kills (Heroic Nexus)
+1506,(Deprecated) Anub'arak kills (Heroic Azjol-Nerub)
+1507,(Deprecated) Herald Volazj kills (Heroic Ahn'kahet)
+1508,(Deprecated) The Prophet Tharon'ja kills (Heroic Drak'Tharon Keep)
+1509,(Deprecated) Cyanigosa kills (Heroic Violet Hold)
+1510,(Deprecated) Gal'darah kills (Heroic Gundrak)
+1511,(Deprecated) Sjonnir the Ironshaper kills (Heroic Halls of Stone)
+1512,(Deprecated) Loken kills (Heroic Halls of Lightning)
+1513,(Deprecated) Ley-Guardian Eregos kills (Heroic Oculus)
+1514,(Deprecated) King Ymiron kills (Heroic Utgarde Pinnacle)
+1515,(Deprecated) Mal'Ganis defeated (Heroic CoT: Stratholme)
 1516,Accomplished Angler
 1517,(Deprecated) Northrend Angler
 1518,Fish caught
@@ -987,8 +987,8 @@
 1536,Highest Leatherworking skill
 1537,Highest Mining skill
 1538,Highest Herbalism skill
-1539,Highest Inscription skill
-1540,Highest Jewelcrafting skill
+1539,(Deprecated) Highest Inscription skill
+1540,(Deprecated) Highest Jewelcrafting skill
 1541,Highest Skinning skill
 1542,Highest Tailoring skill
 1544,Highest Engineering skill
@@ -996,8 +996,8 @@
 1546,Ring of Valor victories
 1547,Dalaran Sewers matches
 1548,Dalaran Sewers victories
-1549,Strand of the Ancients battles
-1550,Strand of the Ancients victories
+1549,(Deprecated) Strand of the Ancients battles
+1550,(Deprecated) Strand of the Ancients victories
 1552,Frenzied Firecracker
 1556,25 Fish
 1557,50 Fish
@@ -1014,11 +1014,11 @@
 1656,Hallowed Be Thy Name
 1657,Hallowed Be Thy Name
 1658,(Deprecated) Champion of the Frozen Wastes
-1676,Loremaster of Eastern Kingdoms
+1676,(Deprecated) Loremaster of Eastern Kingdoms
 1677,Loremaster of Eastern Kingdoms
-1678,Loremaster of Kalimdor
+1678,(Deprecated) Loremaster of Kalimdor
 1680,Loremaster of Kalimdor
-1681,The Loremaster
+1681,(Deprecated) The Loremaster
 1682,The Loremaster
 1683,(Deprecated) Brewmaster
 1684,(Deprecated) Brewmaster
@@ -1056,32 +1056,32 @@
 1729,Alchemy Recipes learned
 1730,Blacksmithing Plans learned
 1734,Engineering Schematics learned
-1735,Inscriptions learned
+1735,(Deprecated) Inscriptions learned
 1737,(Deprecated) Destruction Derby
-1738,Jewelcrafting Designs learned
+1738,(Deprecated) Jewelcrafting Designs learned
 1740,Leatherworking Patterns learned
 1741,Tailoring Patterns learned
 1745,Cooking Recipes known
 1748,First Aid Manuals learned
 1751,(Deprecated) Didn't Stand a Chance
 1752,(Deprecated) Master of Wintergrasp
-1753,Archavon the Stone Watcher kills (Wintergrasp 10 player)
-1754,Archavon the Stone Watcher kills (Wintergrasp 25 player)
+1753,(Deprecated) Archavon the Stone Watcher kills (Wintergrasp 10 player)
+1754,(Deprecated) Archavon the Stone Watcher kills (Wintergrasp 25 player)
 1755,(Deprecated) Within Our Grasp
-1756,Lich King 25-player bosses killed
+1756,(Deprecated) Lich King 25-player bosses killed
 1757,(Deprecated) Defense of the Ancients
-1759,Lich King 25-player different bosses killed
-1760,Lich King 25-player boss killed the most
+1759,(Deprecated) Lich King 25-player different bosses killed
+1760,(Deprecated) Lich King 25-player boss killed the most
 1761,(Deprecated) The Dapper Sapper
 1762,(Deprecated) Not Even a Scratch
 1763,(Deprecated) Artillery Veteran
 1764,(Deprecated) Drop it!
 1765,(Deprecated) Steady Hands
 1766,(Deprecated) Ancient Protector
-1768,Lich King 25-player raids completed (final boss killed)
-1770,Lich King 10-player bosses killed
-1771,Lich King 10-player different bosses killed
-1772,Lich King 10-player boss killed the most
+1768,(Deprecated) Lich King 25-player raids completed (final boss killed)
+1770,(Deprecated) Lich King 10-player bosses killed
+1771,(Deprecated) Lich King 10-player different bosses killed
+1772,(Deprecated) Lich King 10-player boss killed the most
 1773,Beverage consumed most
 1774,Different beverages consumed
 1775,Different foods eaten
@@ -1141,8 +1141,8 @@
 1956,(Deprecated) Higher Learning
 1957,(Deprecated) There's Gold In That There Fountain
 1958,(Deprecated) I Smell A Giant Rat
-1976,Dalaran Cooking Awards gained
-1977,Dalaran Jewelcrafter's Tokens gained
+1976,(Deprecated) Dalaran Cooking Awards gained
+1977,(Deprecated) Dalaran Jewelcrafter's Tokens gained
 1996,(Deprecated) The Safety Dance (10 player)
 1997,(Deprecated) Momma Said Knock You Out (10 player)
 1998,(Deprecated) Dalaran Cooking Award
@@ -1243,10 +1243,10 @@
 2195,(Deprecated) Master of Strand of the Ancients
 2199,(Deprecated) Wintergrasp Ranger
 2200,(Deprecated) Defense of the Ancients
-2216,Most deadly Lich King dungeon boss
-2217,Most deadly Lich King 10-player raid boss
-2218,Most deadly Lich King 25-player raid boss
-2219,Total deaths in 5-player heroic dungeons
+2216,(Deprecated) Most deadly Lich King dungeon boss
+2217,(Deprecated) Most deadly Lich King 10-player raid boss
+2218,(Deprecated) Most deadly Lich King 25-player raid boss
+2219,(Deprecated) Total deaths in 5-player heroic dungeons
 2256,(Deprecated) Northern Exposure
 2257,(Deprecated) Frostbitten
 2277,Summons accepted
@@ -1276,7 +1276,7 @@
 2556,Pest Control
 2557,(Deprecated) To All The Squirrels Who Shared My Life
 2576,Blushing Bride
-2596,Mr. Bigglesworth kills
+2596,(Deprecated) Mr. Bigglesworth kills
 2676,I Found One!
 2716,Dual Talent Specialization
 2756,(Deprecated) Argent Aspiration
@@ -1314,32 +1314,32 @@
 2816,(Deprecated) Exalted Argent Champion of the Horde
 2817,(Deprecated) Exalted Argent Champion of the Alliance
 2836,(Deprecated) Lance a Lot
-2856,Flame Leviathan kills (Ulduar 10 player)
-2857,Razorscale kills (Ulduar 10 player)
-2858,Ignis the Furnace Master kills (Ulduar 10 player)
-2859,XT-002 Deconstructor kills (Ulduar 10 player)
-2860,Assembly of Iron kills (Ulduar 10 player)
-2861,Kologarn kills (Ulduar 10 player)
-2862,Hodir victories (Ulduar 10 player)
-2863,Thorim victories (Ulduar 10 player)
-2864,Freya victories (Ulduar 10 player)
-2865,Mimiron victories (Ulduar 10 player)
-2866,General Vezax kills (Ulduar 10 player)
-2867,Algalon the Observer kills (Ulduar 10 player)
-2868,Auriaya kills (Ulduar 10 player)
-2869,Yogg-Saron kills (Ulduar 10 player)
-2870,Emalon the Storm Watcher kills (Wintergrasp 10 player)
-2872,Flame Leviathan kills (Ulduar 25 player)
-2873,Razorscale kills (Ulduar 25 player)
-2874,Ignis the Furnace Master kills (Ulduar 25 player)
-2875,Kologarn kills (Ulduar 25 player)
-2879,Mimiron victories (Ulduar 25 player)
-2880,General Vezax kills (Ulduar 25 player)
-2881,Algalon the Observer kills (Ulduar 25 player)
-2882,Auriaya kills (Ulduar 25 player)
-2883,Yogg-Saron kills (Ulduar 25 player)
-2884,XT-002 Deconstructor kills (Ulduar 25 player)
-2885,Assembly of Iron kills (Ulduar 25 player)
+2856,(Deprecated) Flame Leviathan kills (Ulduar 10 player)
+2857,(Deprecated) Razorscale kills (Ulduar 10 player)
+2858,(Deprecated) Ignis the Furnace Master kills (Ulduar 10 player)
+2859,(Deprecated) XT-002 Deconstructor kills (Ulduar 10 player)
+2860,(Deprecated) Assembly of Iron kills (Ulduar 10 player)
+2861,(Deprecated) Kologarn kills (Ulduar 10 player)
+2862,(Deprecated) Hodir victories (Ulduar 10 player)
+2863,(Deprecated) Thorim victories (Ulduar 10 player)
+2864,(Deprecated) Freya victories (Ulduar 10 player)
+2865,(Deprecated) Mimiron victories (Ulduar 10 player)
+2866,(Deprecated) General Vezax kills (Ulduar 10 player)
+2867,(Deprecated) Algalon the Observer kills (Ulduar 10 player)
+2868,(Deprecated) Auriaya kills (Ulduar 10 player)
+2869,(Deprecated) Yogg-Saron kills (Ulduar 10 player)
+2870,(Deprecated) Emalon the Storm Watcher kills (Wintergrasp 10 player)
+2872,(Deprecated) Flame Leviathan kills (Ulduar 25 player)
+2873,(Deprecated) Razorscale kills (Ulduar 25 player)
+2874,(Deprecated) Ignis the Furnace Master kills (Ulduar 25 player)
+2875,(Deprecated) Kologarn kills (Ulduar 25 player)
+2879,(Deprecated) Mimiron victories (Ulduar 25 player)
+2880,(Deprecated) General Vezax kills (Ulduar 25 player)
+2881,(Deprecated) Algalon the Observer kills (Ulduar 25 player)
+2882,(Deprecated) Auriaya kills (Ulduar 25 player)
+2883,(Deprecated) Yogg-Saron kills (Ulduar 25 player)
+2884,(Deprecated) XT-002 Deconstructor kills (Ulduar 25 player)
+2885,(Deprecated) Assembly of Iron kills (Ulduar 25 player)
 2886,(Deprecated) The Siege of Ulduar (10 player)
 2887,(Deprecated) The Siege of Ulduar (25 player)
 2888,(Deprecated) The Antechamber of Ulduar (10 player)
@@ -1447,7 +1447,7 @@
 3015,(Deprecated) In His House He Waits Dreaming (10 player)
 3016,(Deprecated) In His House He Waits Dreaming (25 player)
 3017,(Deprecated) They're Coming Out of the Walls (25 player)
-3018,Emblems of Conquest acquired
+3018,(Deprecated) Emblems of Conquest acquired
 3036,(Deprecated) Observed (10 player)
 3037,(Deprecated) Observed (25 player)
 3056,(Deprecated) Orbit-uary (10 player)
@@ -1490,11 +1490,11 @@
 3216,Smelting Recipes learned
 3217,(Deprecated) Chasing Marcia
 3218,Turtles All the Way Down
-3236,Emalon the Storm Watcher kills (Wintergrasp 25 player)
+3236,(Deprecated) Emalon the Storm Watcher kills (Wintergrasp 25 player)
 3237,(Deprecated) Set Up Us the Bomb (25 player)
-3256,Hodir victories (Ulduar 25 player)
-3257,Thorim victories (Ulduar 25 player)
-3258,Freya victories (Ulduar 25 player)
+3256,(Deprecated) Hodir victories (Ulduar 25 player)
+3257,(Deprecated) Thorim victories (Ulduar 25 player)
+3258,(Deprecated) Freya victories (Ulduar 25 player)
 3259,Realm First! Celestial Defender
 3296,(Deprecated) Cooking with Style
 3316,(Deprecated) Herald of the Titans
@@ -1506,7 +1506,7 @@
 3457,(Deprecated) The Captain's Booty
 3478,(Deprecated) Pilgrim
 3496,A Brew-FAST Mount
-3516,Deaths in Ulduar
+3516,(Deprecated) Deaths in Ulduar
 3536,The Marine Marine
 3556,(Deprecated) Pilgrim's Paunch
 3557,(Deprecated) Pilgrim's Paunch
@@ -1585,49 +1585,49 @@
 3997,(Deprecated) Three Sixty Pain Spike (25 player)
 4016,"(Deprecated) Earth, Wind & Fire (10 player)"
 4017,"(Deprecated) Earth, Wind & Fire (25 player)"
-4018,Victories over Hunter Champion (Trial of the Champion)
-4019,Victories over Hunter Champion (Heroic Trial of the Champion)
-4022,Victories over Argent Confessor Paletress (Trial of the Champion)
-4023,Victories over Argent Confessor Paletress (Heroic Trial of the Champion)
-4024,Victories over Eadric the Pure (Trial of the Champion)
-4025,Victories over Eadric the Pure (Heroic Trial of the Champion)
-4026,The Black Knight kills (Trial of the Champion)
-4027,The Black Knight kills (Heroic Trial of the Champion)
-4028,Victories over the Beasts of Northrend (Trial of the Crusader 10 player)
-4029,Victories over the Beasts of Northrend (Trial of the Grand Crusader 25 player)
-4030,Victories over the Beasts of Northrend (Trial of the Grand Crusader 10 player)
-4031,Victories over the Beasts of Northrend (Trial of the Crusader 25 player)
-4032,Lord Jaraxxus kills (Trial of the Crusader 10 player)
-4033,Lord Jaraxxus kills (Trial of the Grand Crusader 10 player)
-4034,Lord Jaraxxus kills (Trial of the Crusader 25 player)
-4035,Lord Jaraxxus kills (Trial of the Grand Crusader 25 player)
-4036,Victories over the Faction Champions (Trial of the Crusader 10 player)
-4037,Victories over the Faction Champions (Trial of the Grand Crusader 10 player)
-4038,Victories over the Faction Champions (Trial of the Crusader 25 player)
-4039,Victories over the Faction Champions (Trial of the Grand Crusader 25 player)
-4040,Val'kyr Twins kills (Trial of the Crusader 10 player)
-4041,Val'kyr Twins kills (Trial of the Grand Crusader 10 player)
-4042,Val'kyr Twins kills (Trial of the Crusader 25 player)
-4043,Val'kyr Twins kills (Trial of the Grand Crusader 25 player)
-4044,Times completed the Trial of the Crusader (10 player)
-4045,Times completed the Trial of the Grand Crusader (10 player)
-4046,Times completed the Trial of the Crusader (25 player)
-4047,Times completed the Trial of the Grand Crusader (25 player)
-4048,Victories over Mage Champion (Trial of the Champion)
-4049,Victories over Mage Champion (Heroic Trial of the Champion)
-4050,Victories over Rogue Champion (Trial of the Champion)
-4051,Victories over Rogue Champion (Heroic Trial of the Champion)
-4052,Victories over Shaman Champion (Trial of the Champion)
-4053,Victories over Shaman Champion (Heroic Trial of the Champion)
-4054,Victories over Warrior Champion (Trial of the Champion)
-4055,Victories over Warrior Champion (Heroic Trial of the Champion)
-4074,Koralon the Flame Watcher kills (Wintergrasp 10 player)
-4075,Koralon the Flame Watcher kills (Wintergrasp 25 player)
+4018,(Deprecated) Victories over Hunter Champion (Trial of the Champion)
+4019,(Deprecated) Victories over Hunter Champion (Heroic Trial of the Champion)
+4022,(Deprecated) Victories over Argent Confessor Paletress (Trial of the Champion)
+4023,(Deprecated) Victories over Argent Confessor Paletress (Heroic Trial of the Champion)
+4024,(Deprecated) Victories over Eadric the Pure (Trial of the Champion)
+4025,(Deprecated) Victories over Eadric the Pure (Heroic Trial of the Champion)
+4026,(Deprecated) The Black Knight kills (Trial of the Champion)
+4027,(Deprecated) The Black Knight kills (Heroic Trial of the Champion)
+4028,(Deprecated) Victories over the Beasts of Northrend (Trial of the Crusader 10 player)
+4029,(Deprecated) Victories over the Beasts of Northrend (Trial of the Grand Crusader 25 player)
+4030,(Deprecated) Victories over the Beasts of Northrend (Trial of the Grand Crusader 10 player)
+4031,(Deprecated) Victories over the Beasts of Northrend (Trial of the Crusader 25 player)
+4032,(Deprecated) Lord Jaraxxus kills (Trial of the Crusader 10 player)
+4033,(Deprecated) Lord Jaraxxus kills (Trial of the Grand Crusader 10 player)
+4034,(Deprecated) Lord Jaraxxus kills (Trial of the Crusader 25 player)
+4035,(Deprecated) Lord Jaraxxus kills (Trial of the Grand Crusader 25 player)
+4036,(Deprecated) Victories over the Faction Champions (Trial of the Crusader 10 player)
+4037,(Deprecated) Victories over the Faction Champions (Trial of the Grand Crusader 10 player)
+4038,(Deprecated) Victories over the Faction Champions (Trial of the Crusader 25 player)
+4039,(Deprecated) Victories over the Faction Champions (Trial of the Grand Crusader 25 player)
+4040,(Deprecated) Val'kyr Twins kills (Trial of the Crusader 10 player)
+4041,(Deprecated) Val'kyr Twins kills (Trial of the Grand Crusader 10 player)
+4042,(Deprecated) Val'kyr Twins kills (Trial of the Crusader 25 player)
+4043,(Deprecated) Val'kyr Twins kills (Trial of the Grand Crusader 25 player)
+4044,(Deprecated) Times completed the Trial of the Crusader (10 player)
+4045,(Deprecated) Times completed the Trial of the Grand Crusader (10 player)
+4046,(Deprecated) Times completed the Trial of the Crusader (25 player)
+4047,(Deprecated) Times completed the Trial of the Grand Crusader (25 player)
+4048,(Deprecated) Victories over Mage Champion (Trial of the Champion)
+4049,(Deprecated) Victories over Mage Champion (Heroic Trial of the Champion)
+4050,(Deprecated) Victories over Rogue Champion (Trial of the Champion)
+4051,(Deprecated) Victories over Rogue Champion (Heroic Trial of the Champion)
+4052,(Deprecated) Victories over Shaman Champion (Trial of the Champion)
+4053,(Deprecated) Victories over Shaman Champion (Heroic Trial of the Champion)
+4054,(Deprecated) Victories over Warrior Champion (Trial of the Champion)
+4055,(Deprecated) Victories over Warrior Champion (Heroic Trial of the Champion)
+4074,(Deprecated) Koralon the Flame Watcher kills (Wintergrasp 10 player)
+4075,(Deprecated) Koralon the Flame Watcher kills (Wintergrasp 25 player)
 4078,Realm First! Grand Crusader
 4079,A Tribute to Immortality
 4080,(Deprecated) A Tribute to Dedicated Insanity
-4096,Isle of Conquest battles
-4097,Isle of Conquest victories
+4096,(Deprecated) Isle of Conquest battles
+4097,(Deprecated) Isle of Conquest victories
 4156,A Tribute to Immortality
 4176,(Deprecated) Resource Glut
 4177,(Deprecated) Mine
@@ -1647,7 +1647,7 @@
 4407,She Deep Breaths More
 4436,BB King
 4437,BB King
-4456,Random Lich King (normal) dungeons completed
+4456,(Deprecated) Random Lich King (normal) dungeons completed
 4476,(Deprecated) Looking For More
 4477,(Deprecated) Looking For Many
 4478,(Deprecated) Looking For Multitudes
@@ -1675,7 +1675,7 @@
 4537,(Deprecated) I've Gone and Made a Mess (10 player)
 4538,(Deprecated) Dances with Oozes (10 player)
 4539,"(Deprecated) Once Bitten, Twice Shy (10 player)"
-4556,Random Lich King (heroic) dungeons completed
+4556,(Deprecated) Random Lich King (heroic) dungeons completed
 4576,Realm First! Fall of the Lich King
 4577,(Deprecated) Flu Shot Shortage (10 player)
 4578,"(Deprecated) Nausea, Heartburn, Indigestion... (10 player)"
@@ -1728,79 +1728,79 @@
 4635,(Deprecated) Heroic: The Frostwing Halls (25 player)
 4636,(Deprecated) Heroic: Fall of the Lich King (10 player)
 4637,(Deprecated) Heroic: Fall of the Lich King (25 player)
-4639,Lord Marrowgar kills (Icecrown 10 player)
-4640,Lord Marrowgar kills (Heroic Icecrown 10 player)
-4641,Lord Marrowgar kills (Icecrown 25 player)
-4642,Lord Marrowgar kills (Heroic Icecrown 25 player)
-4643,Lady Deathwhisper kills (Icecrown 10 player)
-4644,Gunship Battle victories (Icecrown 10 player)
-4645,Deathbringer kills (Icecrown 10 player)
-4646,Festergut kills (Icecrown 10 player)
-4647,Rotface kills (Icecrown 10 player)
-4648,Blood Prince Council kills (Icecrown 10 player)
-4649,Valithria Dreamwalker rescues (Icecrown 10 player)
-4650,Professor Putricide kills (Icecrown 10 player)
-4651,Blood Queen Lana'thel kills (Icecrown 10 player)
-4652,Sindragosa kills (Icecrown 10 player)
-4653,Victories over the Lich King (Icecrown 10 player)
-4654,Lady Deathwhisper kills (Heroic Icecrown 10 player)
-4655,Lady Deathwhisper kills (Icecrown 25 player)
-4656,Lady Deathwhisper kills (Heroic Icecrown 25 player)
-4657,Toravon the Ice Watcher kills (Wintergrasp 10 player)
-4658,Toravon the Ice Watcher kills (Wintergrasp 25 player)
-4659,Gunship Battle victories (Heroic Icecrown 10 player)
-4660,Gunship Battle victories (Icecrown 25 player)
-4661,Gunship Battle victories (Heroic Icecrown 25 player)
-4662,Deathbringer kills (Heroic Icecrown 10 player)
-4663,Deathbringer kills (Icecrown 25 player)
-4664,Deathbringer kills (Heroic Icecrown 25 player)
-4665,Festergut kills (Heroic Icecrown 10 player)
-4666,Festergut kills (Icecrown 25 player)
-4667,Festergut kills (Heroic Icecrown 25 player)
-4668,Rotface kills (Heroic Icecrown 10 player)
-4669,Rotface kills (Icecrown 25 player)
-4670,Rotface kills (Heroic Icecrown 25 player)
-4671,Blood Prince Council kills (Heroic Icecrown 10 player)
-4672,Blood Prince Council kills (Icecrown 25 player)
-4673,Blood Prince Council kills (Heroic Icecrown 25 player)
-4674,Valithria Dreamwalker rescues (Heroic Icecrown 10 player)
-4675,Valithria Dreamwalker rescues (Icecrown 25 player)
-4676,Valithria Dreamwalker rescues (Heroic Icecrown 25 player)
-4677,Professor Putricide kills (Heroic Icecrown 10 player)
-4678,Professor Putricide kills (Icecrown 25 player)
-4679,Professor Putricide kills (Heroic Icecrown 25 player)
-4680,Blood Queen Lana'thel kills (Heroic Icecrown 10 player)
-4681,Blood Queen Lana'thel kills (Icecrown 25 player)
-4682,Blood Queen Lana'thel kills (Heroic Icecrown 25 player)
-4683,Sindragosa kills (Icecrown 25 player)
-4684,Sindragosa kills (Heroic Icecrown 10 player)
-4685,Sindragosa kills (Heroic Icecrown 25 player)
-4686,Victories over the Lich King (Heroic Icecrown 10 player)
-4687,Victories over the Lich King (Icecrown 25 player)
-4688,Victories over the Lich King (Heroic Icecrown 25 player)
-4713,Bronjahm kills (Forge of Souls)
-4714,Bronjahm kills (Heroic Forge of Souls)
-4715,Devourer of Souls kills (Forge of Souls)
-4716,Devourer of Souls kills (Heroic Forge of Souls)
-4717,Forgemaster Garfrost kills (Pit of Saron)
-4718,Ick and Krick kills (Pit of Saron)
-4719,Ick and Krick kills (Heroic Pit of Saron)
-4720,Scourgelord Tyrannus kills (Pit of Saron)
-4721,Scourgelord Tyrannus kills (Heroic Pit of Saron)
-4722,Falric kills (Halls of Reflection)
-4723,Falric kills (Heroic Halls of Reflection)
-4724,Marwyn kills (Halls of Reflection)
-4725,Marwyn kills (Heroic Halls of Reflection)
-4726,Lich King escapes (Halls of Reflection)
-4727,Lich King escapes (Heroic Halls of Reflection)
-4728,Forgemaster Garfrost kills (Heroic Pit of Saron)
-4729,Emblems of Triumph acquired
-4730,Emblems of Frost acquired
-4777,Isle of Conquest Killing Blows
+4639,(Deprecated) Lord Marrowgar kills (Icecrown 10 player)
+4640,(Deprecated) Lord Marrowgar kills (Heroic Icecrown 10 player)
+4641,(Deprecated) Lord Marrowgar kills (Icecrown 25 player)
+4642,(Deprecated) Lord Marrowgar kills (Heroic Icecrown 25 player)
+4643,(Deprecated) Lady Deathwhisper kills (Icecrown 10 player)
+4644,(Deprecated) Gunship Battle victories (Icecrown 10 player)
+4645,(Deprecated) Deathbringer kills (Icecrown 10 player)
+4646,(Deprecated) Festergut kills (Icecrown 10 player)
+4647,(Deprecated) Rotface kills (Icecrown 10 player)
+4648,(Deprecated) Blood Prince Council kills (Icecrown 10 player)
+4649,(Deprecated) Valithria Dreamwalker rescues (Icecrown 10 player)
+4650,(Deprecated) Professor Putricide kills (Icecrown 10 player)
+4651,(Deprecated) Blood Queen Lana'thel kills (Icecrown 10 player)
+4652,(Deprecated) Sindragosa kills (Icecrown 10 player)
+4653,(Deprecated) Victories over the Lich King (Icecrown 10 player)
+4654,(Deprecated) Lady Deathwhisper kills (Heroic Icecrown 10 player)
+4655,(Deprecated) Lady Deathwhisper kills (Icecrown 25 player)
+4656,(Deprecated) Lady Deathwhisper kills (Heroic Icecrown 25 player)
+4657,(Deprecated) Toravon the Ice Watcher kills (Wintergrasp 10 player)
+4658,(Deprecated) Toravon the Ice Watcher kills (Wintergrasp 25 player)
+4659,(Deprecated) Gunship Battle victories (Heroic Icecrown 10 player)
+4660,(Deprecated) Gunship Battle victories (Icecrown 25 player)
+4661,(Deprecated) Gunship Battle victories (Heroic Icecrown 25 player)
+4662,(Deprecated) Deathbringer kills (Heroic Icecrown 10 player)
+4663,(Deprecated) Deathbringer kills (Icecrown 25 player)
+4664,(Deprecated) Deathbringer kills (Heroic Icecrown 25 player)
+4665,(Deprecated) Festergut kills (Heroic Icecrown 10 player)
+4666,(Deprecated) Festergut kills (Icecrown 25 player)
+4667,(Deprecated) Festergut kills (Heroic Icecrown 25 player)
+4668,(Deprecated) Rotface kills (Heroic Icecrown 10 player)
+4669,(Deprecated) Rotface kills (Icecrown 25 player)
+4670,(Deprecated) Rotface kills (Heroic Icecrown 25 player)
+4671,(Deprecated) Blood Prince Council kills (Heroic Icecrown 10 player)
+4672,(Deprecated) Blood Prince Council kills (Icecrown 25 player)
+4673,(Deprecated) Blood Prince Council kills (Heroic Icecrown 25 player)
+4674,(Deprecated) Valithria Dreamwalker rescues (Heroic Icecrown 10 player)
+4675,(Deprecated) Valithria Dreamwalker rescues (Icecrown 25 player)
+4676,(Deprecated) Valithria Dreamwalker rescues (Heroic Icecrown 25 player)
+4677,(Deprecated) Professor Putricide kills (Heroic Icecrown 10 player)
+4678,(Deprecated) Professor Putricide kills (Icecrown 25 player)
+4679,(Deprecated) Professor Putricide kills (Heroic Icecrown 25 player)
+4680,(Deprecated) Blood Queen Lana'thel kills (Heroic Icecrown 10 player)
+4681,(Deprecated) Blood Queen Lana'thel kills (Icecrown 25 player)
+4682,(Deprecated) Blood Queen Lana'thel kills (Heroic Icecrown 25 player)
+4683,(Deprecated) Sindragosa kills (Icecrown 25 player)
+4684,(Deprecated) Sindragosa kills (Heroic Icecrown 10 player)
+4685,(Deprecated) Sindragosa kills (Heroic Icecrown 25 player)
+4686,(Deprecated) Victories over the Lich King (Heroic Icecrown 10 player)
+4687,(Deprecated) Victories over the Lich King (Icecrown 25 player)
+4688,(Deprecated) Victories over the Lich King (Heroic Icecrown 25 player)
+4713,(Deprecated) Bronjahm kills (Forge of Souls)
+4714,(Deprecated) Bronjahm kills (Heroic Forge of Souls)
+4715,(Deprecated) Devourer of Souls kills (Forge of Souls)
+4716,(Deprecated) Devourer of Souls kills (Heroic Forge of Souls)
+4717,(Deprecated) Forgemaster Garfrost kills (Pit of Saron)
+4718,(Deprecated) Ick and Krick kills (Pit of Saron)
+4719,(Deprecated) Ick and Krick kills (Heroic Pit of Saron)
+4720,(Deprecated) Scourgelord Tyrannus kills (Pit of Saron)
+4721,(Deprecated) Scourgelord Tyrannus kills (Heroic Pit of Saron)
+4722,(Deprecated) Falric kills (Halls of Reflection)
+4723,(Deprecated) Falric kills (Heroic Halls of Reflection)
+4724,(Deprecated) Marwyn kills (Halls of Reflection)
+4725,(Deprecated) Marwyn kills (Heroic Halls of Reflection)
+4726,(Deprecated) Lich King escapes (Halls of Reflection)
+4727,(Deprecated) Lich King escapes (Heroic Halls of Reflection)
+4728,(Deprecated) Forgemaster Garfrost kills (Heroic Pit of Saron)
+4729,(Deprecated) Emblems of Triumph acquired
+4730,(Deprecated) Emblems of Frost acquired
+4777,(Deprecated) Isle of Conquest Killing Blows
 4778,Disenchant rolls made on loot
-4779,Isle of Conquest Honorable Kills
-4780,Deaths in Trial of the Crusader
-4781,Deaths in Icecrown Citadel
+4779,(Deprecated) Isle of Conquest Honorable Kills
+4780,(Deprecated) Deaths in Trial of the Crusader
+4781,(Deprecated) Deaths in Icecrown Citadel
 4782,Green Brewfest Stein
 4784,Emblematic
 4785,Emblematic
@@ -1810,13 +1810,12 @@
 4816,(Deprecated) Heroic: The Twilight Destroyer (25 player)
 4817,(Deprecated) The Twilight Destroyer (10 player)
 4818,(Deprecated) Heroic: The Twilight Destroyer (10 player)
-4820,Halion kills (Ruby Sanctum 25 player)
-4821,Halion kills (Ruby Sanctum 10 player)
-4822,Halion kills (Heroic Ruby Sanctum 10 player)
-4823,Halion kills (Heroic Ruby Sanctum 25 player)
+4820,(Deprecated) Halion kills (Ruby Sanctum 25 player)
+4821,(Deprecated) Halion kills (Ruby Sanctum 10 player)
+4822,(Deprecated) Halion kills (Heroic Ruby Sanctum 10 player)
+4823,(Deprecated) Halion kills (Heroic Ruby Sanctum 25 player)
 4824,Collector's Edition: Mini Thor
 4900,Soul of Iron
-4901,I am Iron Man.
 4902,Battle for Hillsbrad: Assault
 4903,Battle for Hillsbrad: Defense
 4906,Beta One Tester
@@ -1833,7 +1832,97 @@
 4918,Silver Trophy
 4919,Gold Trophy
 4920,Bloodthirsty
-4921,Professional Tester
-4922,Pure Leveller
-4923,Dungeoneer
 4924,Beta Two Tester
+4925,Attunement to the Core
+4926,Loremaster of Eastern Kingdoms
+4927,Loremaster of Kalimdor
+4928,The Loremaster
+4929,Lorewalker of Elwynn Forest
+4933,Lorewalker of Westfall
+4936,Loremaster of Eastern Kingdoms
+4937,Loremaster of Kalimdor
+4938,The Loremaster
+4939,Lorewalker of Tanaris
+4941,Lorewalker of Tanaris
+4943,Lorewalker of Alterac Mountains
+4944,Lorewalker of Arathi Highlands
+4945,Lorewalker of Ashenvale
+4946,Lorewalker of Azshara
+4947,Lorewalker of Badlands
+4948,Lorewalker of Blasted Lands
+4949,Lorewalker of Burning Steppes
+4950,Lorewalker of Darkshore
+4951,Lorewalker of Desolace
+4952,Lorewalker of Dun Morogh
+4953,Lorewalker of Duskwood
+4954,Lorewalker of Dustwallow Marsh
+4955,Lorewalker of Eastern Plaguelands
+4956,Lorewalker of Felwood
+4957,Lorewalker of Feralas
+4958,Lorewalker of Hillsbrad Foothills
+4959,Lorewalker of Loch Modan
+4960,Lorewalker of Redridge Mountains
+4961,Lorewalker of Searing Gorge
+4962,Lorewalker of Stonetalon Mountains
+4963,Lorewalker of Stranglethorn Vale
+4964,Lorewalker of Swamp of Sorrows
+4965,Lorewalker of Teldrassil
+4966,Lorewalker of The Barrens
+4967,Lorewalker of The Hinterlands
+4968,Lorewalker of Thousand Needles
+4969,Lorewalker of Un'Goro Crater
+4970,Lorewalker of Western Plaguelands
+4971,Lorewalker of Wetlands
+4972,Lorewalker of Winterspring
+4973,Lorewalker of Alterac Mountains
+4974,Lorewalker of Arathi Highlands
+4975,Lorewalker of Ashenvale
+4976,Lorewalker of Azshara
+4977,Lorewalker of Badlands
+4978,Lorewalker of Blasted Lands
+4979,Lorewalker of Burning Steppes
+4980,Lorewalker of Desolace
+4981,Lorewalker of Durotar
+4982,Lorewalker of Dustwallow Marsh
+4983,Lorewalker of Eastern Plaguelands
+4984,Lorewalker of Felwood
+4985,Lorewalker of Feralas
+4986,Lorewalker of Hillsbrad Foothills
+4987,Lorewalker of Mulgore
+4988,Lorewalker of Searing Gorge
+4989,Lorewalker of Silverpine Forest
+4990,Lorewalker of Stonetalon Mountains
+4991,Lorewalker of Stranglethorn Vale
+4992,Lorewalker of Swamp of Sorrows
+4993,Lorewalker of The Barrens
+4994,Lorewalker of The Hinterlands
+4995,Lorewalker of Thousand Needles
+4996,Lorewalker of Tirisfal Glades
+4997,Lorewalker of Un'Goro Crater
+4998,Lorewalker of Western Plaguelands
+4999,Lorewalker of Winterspring
+5000,The Veiled Blade
+5001,The Veiled Blade
+5002,TRACKING - Dungeon Set Starbreeze Relic
+5003,TRACKING - Dungeon Set Purgation Isle
+5004,TRACKING - Dungeon Set Tyrs Hand
+5005,TRACKING - Dungeon Set Azshara
+5006,Blackmaw Angler
+5007,Deaths in Molten Core
+5008,Deaths in Onyxia's Lair
+5009,Captain Blackstone kills (Baradin Hold)
+5010,Total boops
+5011,Total dabs
+5012,Broodmother's Lair
+5013,Playing with Balefire
+5014,Good Samaritan
+5015,Ghostly Visitation
+5016,Elemental Showdown
+5017,Baradin Hold
+5018,Epic Requirement: Pure Leveller
+5019,Common Requirement: Simple Leveller
+5020,Common Requirement: Basic Dungeoneer
+5021,Common Requirement: Advanced Dungeoneer
+5022,Common Requirement: Professional Tester
+5023,Beta Three Tester
+5024,Epic Requirement: Ortorg Slayer
