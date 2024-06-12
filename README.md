@@ -111,7 +111,7 @@ Even though this bot does not do anything malicious, some servers may not like a
    * Setup the bot with the correct Discord roles/permissions to enter your desired channels.
 
 ## Run
-1. Download the latest ready-made binary from github releases: https://github.com/Bennylavaa/wowchat/releases
+1. Download the latest ready-made binary from github releases: https://github.com/Bennylavaa/wowchat-epoch/releases
    * **Make sure you have a Java Runtime Environment (JRE) 1.8 or higher installed on your system!**
    * **On Windows**: Edit wowchat.conf as above and run `run.bat`
    * **On Mac/Linux**: Edit wowchat.conf as above and run `run.sh`
