@@ -13,7 +13,7 @@
   <Category>Game:Other</Category>
   <WebUI/>
   <TemplateURL>https://raw.githubusercontent.com/Bennylavaa/wowchat-epoch/main/wowchat-epoch.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/Bennylavaa/wowchat-epoch/image/icon.png</Icon>
+  <Icon>https://raw.githubusercontent.com/Bennylavaa/wowchat-epoch/blob/main/images/icon.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
