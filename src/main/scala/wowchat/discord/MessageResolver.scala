@@ -41,9 +41,20 @@ class MessageResolver(jda: JDA) {
   }
 
   def resolveAchievementId(achievementId: Int): String = {
-    val name = GameResources.ACHIEVEMENT.getOrElse(achievementId, achievementId)
+    // Attempt to retrieve the achievement name from the resources
+    val nameOpt: Option[String] = GameResources.ACHIEVEMENT.get(achievementId)
+    
+    // Handle the case where the achievement ID is not found
+    val name: String = nameOpt.getOrElse {
+        // Log a warning or error if necessary
+        println(s"Warning: Achievement ID $achievementId not found. Defaulting to ID.")
+        achievementId.toString
+    }
+
+    // Construct the Markdown link format
     s"[[$name]]($linkSite?achievement=$achievementId)"
-  }
+}
+
 
   def stripColorCoding(message: String): String = {
     val hex = "\\|c[0-9a-fA-F]{8}"
