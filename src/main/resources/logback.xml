@@ -17,6 +17,7 @@
     <logger name="wowchat.game.GamePacketDecoderWotLK" level="${logLevel}" />
     <logger name="wowchat.game.GamePacketDecoderCataclysm" level="${logLevel}" />
     <logger name="wowchat.game.GamePacketDecoderMoP" level="${logLevel}" />
+    <logger name="wowchat.game.GamePacketHandler" level="${logLevel}" />
 
     <root level="${logLevel}">
         <appender-ref ref="STDOUT" />
