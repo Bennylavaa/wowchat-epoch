@@ -282,11 +282,11 @@ class GamePacketHandler(
     sendMessageToWow(ChatEvents.CHAT_MSG_GUILD, message, None)
   }
 
-  protected def sendGroupInvite(name: String): Unit = {
+protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
+      buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase(), includeUInt32 = true)
     )
-  }
+}
 
   def sendGroupKick(name: String): Unit = {
     ctx.get.writeAndFlush(
@@ -316,15 +316,21 @@ class GamePacketHandler(
     ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
   }
 
-  protected def buildSingleStringPacket(
-      opcode: Int,
-      string_param: String
-  ): Packet = {
+protected def buildSingleStringPacket(
+    opcode: Int,
+    string_param: String,
+    includeUInt32: Boolean = false // New parameter to indicate if UInt32 should be included
+): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
     byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-    byteBuf.writeByte(0)
+    byteBuf.writeByte(0) // Null terminator for the string
+
+    if (includeUInt32) {
+        byteBuf.writeIntLE(0) // Add UInt32 zero padding
+    }
+
     Packet(opcode, byteBuf)
-  }
+}
 
   def groupDisband(): Unit = {
     logger.debug(s"Disbanding group...")
