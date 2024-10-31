@@ -880,58 +880,66 @@ protected def buildSingleStringPacket(
     }
   }
 
-  protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
-    val tp = msg.byteBuf.readByte
+override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
+    // Read the chat type (u8)
+    val tp = msg.byteBuf.readByte()
 
-    val lang = msg.byteBuf.readIntLE
-    // ignore addon messages
+    // Read the language (u32)
+    val lang = msg.byteBuf.readIntLE()
+
+    // Ignore addon messages
     if (lang == -1) {
-      return None
+        return None
     }
 
-    val channelName = if (tp == ChatEvents.CHAT_MSG_CHANNEL) {
-      val ret = Some(msg.readString)
-      msg.byteBuf.skipBytes(4)
-      ret
-    } else {
-      None
-    }
+    // Read the sender's GUID (u64)
+    val guid = msg.byteBuf.readLongLE()
 
-    // ignore if from an unhandled channel
-    if (!Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
-      return None
-    }
-
-    // ignore messages from itself, unless it is a system message.
-    val guid = msg.byteBuf.readLongLE
+    // Ignore messages from itself unless it's a system message
     if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
-      return None
+        return None
     }
 
-    // these events have a "target" guid we need to skip
+    // Handle channel messages and skip extra bytes if necessary
+    val channelName = if (tp == ChatEvents.CHAT_MSG_CHANNEL) {
+        val ret = Some(msg.readString())
+        msg.byteBuf.skipBytes(4) // Skip channel ID (if present)
+        ret
+    } else {
+        None
+    }
+
+    // Ignore if from an unhandled channel
+    if (!Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
+        return None
+    }
+
+    // Skip the target GUID for certain chat types
     tp match {
-      case ChatEvents.CHAT_MSG_SAY | ChatEvents.CHAT_MSG_YELL =>
-        msg.byteBuf.skipBytes(8)
-      case _ =>
+        case ChatEvents.CHAT_MSG_SAY | ChatEvents.CHAT_MSG_YELL =>
+            msg.byteBuf.skipBytes(8) // Skip target GUID
+        case _ =>
     }
 
-    val txtLen = msg.byteBuf.readIntLE
-    val txt = msg.byteBuf
-      .readCharSequence(txtLen - 1, Charset.forName("UTF-8"))
-      .toString
+    // Read message length (u32)
+    val txtLen = msg.byteBuf.readIntLE()
+    // Read the message content
+    val txt = msg.byteBuf.readCharSequence(txtLen, Charset.forName("UTF-8")).toString
 
-    // invite feature:
-    if (
-      tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains(
-        "camp"
-      ) || txt.toLowerCase().contains("invite"))
-    ) {
-      playersToGroupInvite += guid
-      logger.debug(s"PLAYER INVITATION: added $guid to the queue")
+    // Skip null terminator if necessary
+    if (msg.byteBuf.isReadable) {
+        msg.byteBuf.skipBytes(1) // Null terminator
+    }
+
+    // Check for invite commands in whispers
+    if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
+        playersToGroupInvite += guid // Add GUID to the invite list
+        logger.debug(s"PLAYER INVITATION: added $guid to the queue")
+        // Optionally send a group invite here, e.g., sendGroupInvite(txt) if you have the function
     }
 
     Some(ChatMessage(guid, tp, txt, channelName))
-  }
+}
 
   private def handle_SMSG_CHANNEL_NOTIFY(msg: Packet): Unit = {
     val id = msg.byteBuf.readByte
