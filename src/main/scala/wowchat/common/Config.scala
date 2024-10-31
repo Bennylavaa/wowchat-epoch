@@ -61,10 +61,11 @@ object WowChatConfig extends GamePackets {
       Wow(
         getOpt[String](wowConf, "locale").getOrElse("enUS"),
         Platform.valueOf(getOpt[String](wowConf, "platform").getOrElse("Mac")),
-        getOpt[Int](wowConf, "realm_build").orElse(getOpt[Int](wowConf, "build")),
-        getOpt[Int](wowConf, "game_build").orElse(getOpt[Int](wowConf, "build")),
+        getOpt[String](wowConf, "realm_build").map(_.toInt).orElse(getOpt[Int](wowConf, "build")),
+        getOpt[String](wowConf, "game_build").map(_.toInt).orElse(getOpt[Int](wowConf, "build")),
+
         parseRealmlist(wowConf),
-        getOpt[String](wowConf, "realm").getOrElse("Nordanaar"),
+        getOpt[String](wowConf, "realm").getOrElse("Project Epoch"),
         convertToUpper(wowConf.getString("account")),
         wowConf.getString("password"),
         wowConf.getString("character"),
@@ -105,7 +106,6 @@ object WowChatConfig extends GamePackets {
 
   lazy val getRealmBuild: Int = Global.config.wow.realmBuild.getOrElse(buildFromVersion)
   lazy val getGameBuild: Int = Global.config.wow.gameBuild.getOrElse(buildFromVersion)
-  lazy val armoryURL: String = s"https://turtle-wow.org/armory/${Global.config.wow.realm}/"
 
   private def convertToUpper(account: String): Array[Byte] = {
     account.map(c => {
@@ -207,24 +207,25 @@ object WowChatConfig extends GamePackets {
     }
   }
 
-  private def getOpt[T : TypeTag](cfg: Config, path: String): Option[T] = {
-    if (cfg.hasPath(path)) {
-      // evil smiley face :)
-      Some(
-        (if (typeOf[T] =:= typeOf[Boolean]) {
+private def getOpt[T: TypeTag](cfg: Config, path: String): Option[T] = {
+  if (cfg.hasPath(path)) {
+    Some(
+      (typeOf[T] match {
+        case t if t =:= typeOf[Int] =>
+          cfg.getString(path).toInt
+        case t if t =:= typeOf[Boolean] =>
           cfg.getString(path).toLowerCase match {
             case "true" | "1" | "y" | "yes" => true
             case _ => false
           }
-        } else if (typeOf[T] =:= typeOf[String]) {
+        case t if t =:= typeOf[String] =>
           cfg.getString(path)
-        } else {
+        case _ =>
           cfg.getAnyRef(path)
-        }).asInstanceOf[T]
-      )
-    } else {
-      None
-    }
+      }).asInstanceOf[T]
+    )
+  } else {
+    None
   }
 }
 
