@@ -226,6 +226,7 @@ private def getOpt[T: TypeTag](cfg: Config, path: String): Option[T] = {
     )
   } else {
     None
+    }
   }
 }
 
