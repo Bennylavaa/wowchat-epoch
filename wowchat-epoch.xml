@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>wowchat-epoch</Name>
+  <Repository>Bennylavaa/wowchat-epoch</Repository>
+  <Registry>https://hub.docker.com/r/bennylavaa/wowchat-epoch</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/Bennylavaa/wowchat-epoch/issues</Support>
+  <Project>https://github.com/Bennylavaa/wowchat-epoch</Project>
+  <Overview>A selfhosted chatbot for communication between Project Epoch and Discord.</Overview>
+  <Category>Game:Other</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/Bennylavaa/wowchat-epoch/main/wowchat-epoch.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/Bennylavaa/wowchat-epoch/image/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <Requires/>
+  <Config Name="Discord Bot Token" Target="DISCORD_TOKEN" Default="" Mode="" Description="Discord bot token for integration" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="WoW Account" Target="WOW_ACCOUNT" Default="" Mode="" Description="World of Warcraft account name" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="WoW Password" Target="WOW_PASSWORD" Default="" Mode="" Description="World of Warcraft account password" Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="WoW Character" Target="WOW_CHARACTER" Default="" Mode="" Description="Character name in World of Warcraft" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="Configuration File" Target="CONF_FILE" Default="" Mode="" Description="Path to the configuration file" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+</Container>
