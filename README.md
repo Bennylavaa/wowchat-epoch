@@ -1,18 +1,11 @@
-WoWChat -- README
+WoWChat-Turtle -- README
 =================
 
 WoWChat is a Discord integration chat bot for old versions of World of Warcraft.
 
-**It does NOT support WoW Classic or Retail servers.**
+This version of [WoWChat](https://github.com/fjaros/wowchat) has been adjusted only for use on the modded vanilla server https://turtle-wow.org/
 
 New Requirement: Due to Discord changes, you must check PRESENCE INTENT, SERVER MEMBERS INTENT, and MESSAGE CONTENT INTENT under Privileged Gateway Intents in Discord developer portal.
-
-Currently supported versions are:
-  * Vanilla
-  * The Burning Crusade
-  * Wrath of the Lich King
-  * Cataclysm (4.3.4 build 15595)
-  * Mists of Pandaria (5.4.8 build 18414)
 
 Features:
 * Clientless (Does not need the WoW Client to be open to run)
@@ -111,14 +104,35 @@ Even though this bot does not do anything malicious, some servers may not like a
    * Setup the bot with the correct Discord roles/permissions to enter your desired channels.
 
 ## Run
-1. Download the latest ready-made binary from github releases: https://github.com/Bennylavaa/wowchat-epoch/releases
-   * **Make sure you have a Java Runtime Environment (JRE) 1.8 or higher installed on your system!**
-   * **On Windows**: Edit wowchat.conf as above and run `run.bat`
-   * **On Mac/Linux**: Edit wowchat.conf as above and run `run.sh`
-
-OR to compile yourself:
 1. WoW Chat is written in Scala and compiles to a Java executable using [maven](https://maven.apache.org).
 2. It uses Java JDK 1.8 and Scala 2.12.12.
-3. Run `mvn clean package` which will produce a file in the target folder called `wowchat-1.3.8.zip`
-4. unzip `wowchat-1.3.8.zip`, edit the configuration file and run `java -jar wowchat.jar <config file>`
+3. Run `mvn clean package` which will produce a file in the target folder called `wowchat-<current_version>.zip`
+4. unzip `wowchat-<current_version>.zip`, edit the configuration file and run `java -jar wowchat.jar <config file>`
    * If no config file is supplied, the bot will try to use `wowchat.conf`
+
+## Run as container
+Docker support has been added for an alternative and simple way to deploy WoW Chat:
+
+1. Populate `.env` file with required information:
+
+  (or skip this step and configure these specific fields manually in `./src/main/resources/wowchat.conf`):
+```bash
+DISCORD_TOKEN=...
+WOW_ACCOUNT=...
+WOW_PASSWORD=...
+WOW_CHARACTER=...
+```
+2. Configure `./src/main/resources/wowchat.conf` as needed.
+3. Build container:
+```bash
+docker-compose build
+```
+4. Run:
+```bash
+docker-compose up
+
+# might be helpful:
+docker-compose up -d  # run detached
+docker stats          # displays resource usage
+docker-compose down   # stops running container
+```

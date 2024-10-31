@@ -17,6 +17,19 @@ trait GamePackets {
   val SMSG_GUILD_QUERY = 0x55
   val CMSG_WHO = 0x62
   val SMSG_WHO = 0x63
+  val CMSG_GROUP_INVITE = 0x6E
+  val SMSG_GROUP_INVITE = 0x6F
+  val CMSG_GROUP_KICK = 0x75
+  val CMSG_GROUP_KICK_UUID = 0x76
+  val SMSG_GROUP_KICK = 0x77
+  val CMSG_GROUP_RAID_CONVERT = 0x28E
+  val CMSG_GROUP_DISBAND = 0x7B
+  val SMSG_GROUP_LIST = 0x7D
+  val CMSG_LOOT_METHOD = 0x7A
+  val SMSG_PARTY_COMMAND_RESULT = 0x7F
+  val CMSG_GUILD_INVITE = 0x82
+  val SMSG_GUILD_INVITE = 0x83
+  val CMSG_GUILD_REMOVE = 0x8E
   val CMSG_GUILD_ROSTER = 0x89
   val SMSG_GUILD_ROSTER = 0x8A
   val SMSG_GUILD_EVENT = 0x92
@@ -24,6 +37,7 @@ trait GamePackets {
   val SMSG_MESSAGECHAT = 0x96
   val CMSG_JOIN_CHANNEL = 0x97
   val SMSG_CHANNEL_NOTIFY = 0x99
+  val CMSG_RESET_INSTANCES = 0x31D
 
   val SMSG_NOTIFICATION = 0x01CB
   val CMSG_PING = 0x01DC
@@ -58,6 +72,7 @@ trait GamePackets {
     lazy val CHAT_MSG_CHANNEL_LIST = if (WowChatConfig.getExpansion == WowExpansion.Vanilla) 0x11.toByte else 0x14.toByte
     lazy val CHAT_MSG_CHANNEL_NOTICE = if (WowChatConfig.getExpansion == WowExpansion.Vanilla) 0x12.toByte else 0x15.toByte
     lazy val CHAT_MSG_CHANNEL_NOTICE_USER = if (WowChatConfig.getExpansion == WowExpansion.Vanilla) 0x13.toByte else 0x16.toByte
+    lazy val CHAT_MSG_HARDCORE = 0x5E.toByte
 
     lazy val CHAT_MSG_ACHIEVEMENT = if (WowChatConfig.getExpansion == WowExpansion.MoP) 0x2E.toByte else 0x30.toByte
     lazy val CHAT_MSG_GUILD_ACHIEVEMENT = if (WowChatConfig.getExpansion == WowExpansion.MoP) 0x2F.toByte else 0x31.toByte
@@ -72,6 +87,7 @@ trait GamePackets {
         case "emote" => CHAT_MSG_EMOTE
         case "whisper" => CHAT_MSG_WHISPER
         case "channel" | "custom" => CHAT_MSG_CHANNEL
+        case "hardcore" => CHAT_MSG_HARDCORE
         case _ => -1
       }).toByte
     }
@@ -86,6 +102,7 @@ trait GamePackets {
         case CHAT_MSG_EMOTE | CHAT_MSG_TEXT_EMOTE => "Emote"
         case CHAT_MSG_CHANNEL => "Channel"
         case CHAT_MSG_SYSTEM => "System"
+        case CHAT_MSG_HARDCORE => "Hardcore"
         case _ => "Unknown"
       }
     }
@@ -122,7 +139,7 @@ trait GamePackets {
 
     def getLanguage(race: Byte): Byte = {
       race match {
-        case RACE_ORC | RACE_UNDEAD | RACE_TAUREN | RACE_TROLL | RACE_BLOODELF | RACE_GOBLIN | RACE_PANDAREN_HORDE => 0x01 // orcish
+        case RACE_ORC | RACE_UNDEAD | RACE_TAUREN | RACE_TROLL | RACE_GOBLIN | RACE_PANDAREN_HORDE => 0x01 // orcish
         case RACE_PANDAREN_NEUTRAL => 0x2A.toByte // pandaren neutral?
         case _ => 0x07 // common
       }
@@ -139,7 +156,7 @@ trait GamePackets {
         case RACE_GNOME => "Gnome"
         case RACE_TROLL => "Troll"
         case RACE_GOBLIN => "Goblin"
-        case RACE_BLOODELF => "Blood Elf"
+        case RACE_BLOODELF => "High Elf"
         case RACE_DRAENEI => "Draenei"
         case RACE_WORGEN => "Worgen"
         case RACE_PANDAREN_NEUTRAL => "Pandaren"
