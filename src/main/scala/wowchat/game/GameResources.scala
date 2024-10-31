@@ -1,8 +1,8 @@
 package wowchat.game
 
 import wowchat.common.{WowChatConfig, WowExpansion}
+
 import scala.io.Source
-import scala.util.matching.Regex
 
 object GameResources {
 
@@ -13,27 +13,14 @@ object GameResources {
 
   lazy val ACHIEVEMENT: Map[Int, String] = readIDNameFile("achievements.csv")
 
-  private def readIDNameFile(file: String): Map[Int, String] = {
-    // Regex to match ID and name considering both quoted and unquoted names
-    val achievementPattern: Regex = """(\d+),\s*(?:"([^"]*)"|([^",]*))""".r
-
+  private def readIDNameFile(file: String) = {
     Source
       .fromResource(file)
       .getLines
-      .flatMap {
-        case achievementPattern(idStr, quotedName, unquotedName) =>
-          val name = Option(quotedName).orElse(Option(unquotedName)).getOrElse("")
-          try {
-            Some(idStr.toInt -> name.trim)
-          } catch {
-            case _: NumberFormatException =>
-              println(s"Invalid ID format: $idStr")
-              None
-          }
-        case line =>
-          println(s"Invalid line format: $line")
-          None
-      }
+      .map(str => {
+        val splt = str.split(",", 2)
+        splt(0).toInt -> splt(1)
+      })
       .toMap
   }
 }
