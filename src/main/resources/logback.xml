@@ -1,5 +1,5 @@
 <configuration>
-    <property name="logLevel" value="INFO" />
+    <property name="logLevel" value="DEBUG" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
