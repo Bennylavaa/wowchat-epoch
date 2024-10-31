@@ -20,10 +20,10 @@
   <Requires/>
   <Config Name="Discord Bot Token" Target="DISCORD_TOKEN" Default="" Mode="" Description="Discord bot token for integration" Type="Variable" Display="always" Required="true" Mask="false"></Config>
   <Config Name="Version Number" Target="VERSION_NUMBER" Default="3.3.5" Mode="" Description="Version number of the application" Type="Variable" Display="always" Required="false" Mask="false"></Config>
-  <Config Name="Realm Build" Target="REALM_BUILD" Default="" Mode="12340" Description="Realm build version" Type="Variable" Display="always" Required="false" Mask="false"></Config>
-  <Config Name="Game Build" Target="GAME_BUILD" Default="" Mode="12340" Description="Game build version" Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Realm Build" Target="REALM_BUILD" Default="12340" Mode="" Description="Realm build version" Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Game Build" Target="GAME_BUILD" Default="12340" Mode="" Description="Game build version" Type="Variable" Display="always" Required="false" Mask="false"></Config>
   <Config Name="Realmlist URL" Target="REALMLIST_URL" Default="game.project-epoch.net" Mode="" Description="URL for the realmlist" Type="Variable" Display="always" Required="false" Mask="false"></Config>
-  <Config Name="Realm Name" Target="REALM_NAME" Default="" Mode="Project Epoch" Description="Name of the game realm" Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Realm Name" Target="REALM_NAME" Default="Project Epoch" Mode="" Description="Name of the game realm" Type="Variable" Display="always" Required="false" Mask="false"></Config>
   <Config Name="WoW Account" Target="WOW_ACCOUNT" Default="" Mode="" Description="World of Warcraft account name" Type="Variable" Display="always" Required="true" Mask="false"></Config>
   <Config Name="WoW Password" Target="WOW_PASSWORD" Default="" Mode="" Description="World of Warcraft account password" Type="Variable" Display="always" Required="true" Mask="true"></Config>
   <Config Name="WoW Character" Target="WOW_CHARACTER" Default="" Mode="" Description="Character name in World of Warcraft" Type="Variable" Display="always" Required="true" Mask="false"></Config>
