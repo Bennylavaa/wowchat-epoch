@@ -92,7 +92,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     NameQueryMessage(guid, name, charClass)
   }
   
-  def readString(buf: ByteBuf): String = {
+  override def readString(buf: ByteBuf): String = {
     val ret = ArrayBuffer.newBuilder[Byte]
     breakable {
       while (buf.readableBytes > 0) {
@@ -105,7 +105,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     }
     Source.fromBytes(ret.result.toArray, "UTF-8").mkString
   }
-  protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
+  override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
     logger.info(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
     val groupType = msg.byteBuf.readByte // 0: group, 1: raid
     msg.byteBuf.skipBytes(1) // flags
@@ -227,7 +227,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
   override def sendResetInstances(): Unit = {
     ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
   }
-  protected def buildSingleStringPacket(opcode: Int, string_param: String): Packet = {
+  override protected def buildSingleStringPacket(opcode: Int, string_param: String): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
     byteBuf.writeBytes(string_param.getBytes("UTF-8"))
     byteBuf.writeByte(0)
