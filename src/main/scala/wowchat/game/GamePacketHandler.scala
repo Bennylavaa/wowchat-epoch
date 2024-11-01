@@ -320,12 +320,12 @@ class GamePacketHandler(
       opcode: Int,
       string_param: String
   ): Packet = {
-    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
+    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 20) // Adjusted size to fit additional UInt32
     byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-    byteBuf.writeByte(0)
+    byteBuf.writeByte(0) // Null terminator for string
+    byteBuf.writeInt(0) // Additional UInt32 (0x0) as required by WotLK
     Packet(opcode, byteBuf)
   }
-
   def groupDisband(): Unit = {
     logger.info(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
