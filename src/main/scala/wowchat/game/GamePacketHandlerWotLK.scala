@@ -163,7 +163,7 @@ class GamePacketHandlerWotLK(
     )
   }
 
-  def buildGuildiesOnline: String = {
+  override def buildGuildiesOnline: String = {
     val characterName = Global.config.wow.character
 
     guildRoster.valuesIterator
@@ -181,7 +181,7 @@ class GamePacketHandlerWotLK(
       .mkString(getGuildiesOnlineMessage(false), ", ", "")
   }
 
-  def getGuildiesOnlineMessage(isStatus: Boolean): String = {
+  override def getGuildiesOnlineMessage(isStatus: Boolean): String = {
     val size = guildRoster.count(_._2.isOnline) - 1
     val guildies = s"guildie${if (size != 1) "s" else ""}"
 
@@ -215,7 +215,7 @@ class GamePacketHandlerWotLK(
     Packet(CMSG_GUILD_ROSTER)
   }
 
-  def sendLogout: Option[ChannelFuture] = {
+  override def sendLogout: Option[ChannelFuture] = {
     ctx.flatMap(ctx => {
       if (ctx.channel.isActive) {
         Some(ctx.writeAndFlush(Packet(CMSG_LOGOUT_REQUEST)))
@@ -270,31 +270,31 @@ class GamePacketHandlerWotLK(
     )
   }
 
-  def sendGroupKick(name: String): Unit = {
+  override def sendGroupKick(name: String): Unit = {
     ctx.get.writeAndFlush(
       buildSingleStringPacket(CMSG_GROUP_KICK, name.toLowerCase())
     )
   }
 
-  def sendGroupKickUUID(name_uuid: String): Unit = {
+  override def sendGroupKickUUID(name_uuid: String): Unit = {
     ctx.get.writeAndFlush(
       buildSingleStringPacket(CMSG_GROUP_KICK_UUID, name_uuid)
     )
   }
 
-  def sendGuildInvite(name: String): Unit = {
+  override def sendGuildInvite(name: String): Unit = {
     ctx.get.writeAndFlush(
       buildSingleStringPacket(CMSG_GUILD_INVITE, name.toLowerCase())
     )
   }
 
-  def sendGuildKick(name: String): Unit = {
+  override def sendGuildKick(name: String): Unit = {
     ctx.get.writeAndFlush(
       buildSingleStringPacket(CMSG_GUILD_REMOVE, name.toLowerCase())
     )
   }
 
-  def sendResetInstances(): Unit = {
+  override def sendResetInstances(): Unit = {
     ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
   }
 
@@ -308,16 +308,16 @@ class GamePacketHandlerWotLK(
     Packet(opcode, byteBuf)
   }
 
-  def groupDisband(): Unit = {
+  override def groupDisband(): Unit = {
     logger.debug(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
   }
 
-  def groupConvertToRaid(): Unit = {
+  override def groupConvertToRaid(): Unit = {
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_RAID_CONVERT))
   }
 
-  def updateGroupLootMethod(mode: Int, masterGUID: Long = 0, threshold: Int = 2) = {
+  override def updateGroupLootMethod(mode: Int, masterGUID: Long = 0, threshold: Int = 2) = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(16, 16)
     byteBuf.writeIntLE(mode)
     byteBuf.writeLongLE(masterGUID)
@@ -325,7 +325,7 @@ class GamePacketHandlerWotLK(
     ctx.get.writeAndFlush(Packet(CMSG_LOOT_METHOD, byteBuf))
   }
 
-  def sendNameQuery(guid: Long): Unit = {
+  override def sendNameQuery(guid: Long): Unit = {
     ctx.foreach(ctx => {
       val out = PooledByteBufAllocator.DEFAULT.buffer(8, 8)
       out.writeLongLE(guid)
@@ -549,7 +549,7 @@ class GamePacketHandlerWotLK(
     })
   }
 
-  def readString(buf: ByteBuf): String = {
+  override def readString(buf: ByteBuf): String = {
     val ret = ArrayBuffer.newBuilder[Byte]
     breakable {
       while (buf.readableBytes > 0) {
