@@ -132,38 +132,6 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
   override protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(buildSingleStringPacketWRATH(CMSG_GROUP_INVITE, name.toLowerCase()))
   }
-  override def sendGroupKick(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_KICK, name.toLowerCase())
-    )
-  }
-
-  override def sendGroupKickUUID(name_uuid: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_KICK_UUID, name_uuid)
-    )
-  }
-
-  override def sendGuildInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GUILD_INVITE, name.toLowerCase())
-    )
-  }
-
-  override def sendGuildKick(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GUILD_REMOVE, name.toLowerCase())
-    )
-  }
-  override protected def buildSingleStringPacket(
-        opcode: Int,
-        string_param: String
-    ): Packet = {
-      val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
-      byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-      byteBuf.writeByte(0)
-      Packet(opcode, byteBuf)
-    }
   
 protected def buildSingleStringPacketWRATH(
     opcode: Int,
@@ -199,11 +167,7 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
     logger.info(s"DEBUG: Skipping message from self, guid: $guid")
     return None
   }
-    // ignore messages from itself, unless it is a system message.
-    val guid = msg.byteBuf.readLongLE
-    if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
-      return None
-    }
+
   // Skip unused bytes
   msg.byteBuf.skipBytes(4)
 

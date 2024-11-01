@@ -19,7 +19,7 @@
   <CPUset/>
   <Requires/>
   <Config Name="Discord Bot Token" Target="DISCORD_TOKEN" Default="" Mode="" Description="Discord bot token for integration" Type="Variable" Display="always" Required="true" Mask="false"></Config>
-  <Config Name="Discord Normal Commands Channel" Target="DISCORD_COMMAND_CHANNEL" Default="guild-chat" Mode="" Description="Channel name where players can use ?who and .server info" Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Discord Normal Commands Channel" Target="DISCORD_COMMAND_CHANNEL" Default="officer-chat, guild-chat" Mode="" Description="Channel name where players can use ?who and .server info" Type="Variable" Display="always" Required="false" Mask="false"></Config>
   <Config Name="Discord Protected Commands Channel" Target="DISCORD_PROTECTED_CHANNEL" Default="" Mode="" Description="Channel id where players can use ?who and .server info" Type="Variable" Display="always" Required="false" Mask="false"></Config>
   <Config Name="Version Number" Target="VERSION_NUMBER" Default="3.3.5" Mode="" Description="Version number of the application" Type="Variable" Display="always" Required="true" Mask="false"></Config>
   <Config Name="Realm Build" Target="REALM_BUILD" Default="12340" Mode="" Description="Realm build version" Type="Variable" Display="always" Required="false" Mask="false"></Config>
