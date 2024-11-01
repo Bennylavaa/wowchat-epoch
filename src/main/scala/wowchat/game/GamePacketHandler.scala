@@ -322,8 +322,11 @@ protected def sendGroupInvite(name: String): Unit = {
   ): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 20) // Adjusted size to fit additional UInt32
     byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-    byteBuf.writeByte(0) // Null terminator for string
-    byteBuf.writeInt(0) // Additional UInt32 (0x0) as required by WotLK
+    byteBuf.writeByte(0) // Null terminator for the string
+    byteBuf.writeByte(0) // Null terminator for the string
+    byteBuf.writeByte(0) // Null terminator for the string
+    byteBuf.writeByte(0) // Null terminator for the string
+    byteBuf.writeByte(0) // Null terminator for the string
     Packet(opcode, byteBuf)
   }
 
