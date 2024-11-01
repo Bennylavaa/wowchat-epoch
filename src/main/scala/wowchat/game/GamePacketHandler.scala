@@ -73,6 +73,7 @@ class GamePacketHandler(
     0x66, 0x8f
   ).map(_.toByte)
 
+  protected val playersToInvite: HashSet[Long] = HashSet[Long]()
   protected var selfCharacterId: Option[Long] = None
   protected var languageId: Byte = _
   protected var inWorld: Boolean = false
