@@ -117,16 +117,16 @@ class GamePacketHandler(
         val guidsToRemove: HashSet[Long] = HashSet[Long]()
 
         playersToGroupInvite.foreach { guid =>
-          logger.debug(s"Player group invitation: handling ${guid}...")
+          logger.info(s"Player group invitation: handling ${guid}...")
           var player_name = playerRosterCached.get(guid)
           player_name match {
             case Some(name) =>
-              logger.debug(s"Inviting player '${name}'")
+              logger.info(s"Inviting player '${name}'")
               groupConvertToRaid
               sendGroupInvite(name)
               guidsToRemove += guid
             case None =>
-              logger.debug(
+              logger.info(
                 s"Player invitation:'$guid' not cached, sending name query..."
               )
               sendNameQuery(guid)
@@ -327,7 +327,7 @@ class GamePacketHandler(
   }
 
   def groupDisband(): Unit = {
-    logger.debug(s"Disbanding group...")
+    logger.info(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
   }
 
@@ -597,7 +597,7 @@ class GamePacketHandler(
           }
         }
       }
-      logger.debug(s"Member #$i: $name - is online: $isOnline")
+      logger.info(s"Member #$i: $name - is online: $isOnline")
     }
 
     val leaderGUID = msg.byteBuf.readLongLE()
@@ -829,7 +829,7 @@ class GamePacketHandler(
   }
 
   protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
-    logger.debug(
+    logger.info(
       s"RECV CHAT: ${ByteUtils.toHexString(msg.byteBuf, true, true)}"
     )
     parseChatMessage(msg).foreach(sendChatMessage)
@@ -837,7 +837,7 @@ class GamePacketHandler(
 
   protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
     val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
-    logger.debug(s"RECV PARTY COMMAND RESULT: ${reply}")
+    logger.info(s"RECV PARTY COMMAND RESULT: ${reply}")
 
     // We get this reply when we don't have rights to invite others
     if (reply == "00 00 00 00 00 06 00 00 00") {
@@ -921,7 +921,7 @@ class GamePacketHandler(
       ) || txt.toLowerCase().contains("invite"))
     ) {
       playersToGroupInvite += guid
-      logger.debug(s"PLAYER INVITATION: added $guid to the queue")
+      logger.info(s"PLAYER INVITATION: added $guid to the queue")
     }
 
     Some(ChatMessage(guid, tp, txt, channelName))
