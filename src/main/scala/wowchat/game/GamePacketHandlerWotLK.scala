@@ -55,20 +55,11 @@ class GamePacketHandlerWotLK(
     0x1C, 0x3E, 0x9E, 0xE1, 0x93, 0xC8, 0x8D
   ).map(_.toByte)
 
-  override  protected var selfCharacterId: Option[Long] = None
-  override  protected var languageId: Byte = _
-  override  protected var inWorld: Boolean = false
-  override  protected var guildGuid: Long = _
-  override  protected var guildInfo: GuildInfo = _
-  override  protected var guildMotd: Option[String] = None
-
-  override  protected var ctx: Option[ChannelHandlerContext] = None
   override  protected val playerRoster = LRUMap.empty[Long, Player]
   override  protected val playerRosterCached = LRUMap.empty[Long, String]
   override  protected val playersToGroupInvite: HashSet[Long] = HashSet[Long]()
   override  protected val groupMembers = mutable.Map.empty[String, Boolean]
   override  protected val guildRoster = mutable.Map.empty[Long, GuildMember]
-  override  protected var lastRequestedGuildRoster: Long = _
   override  protected val executorService = Executors.newSingleThreadScheduledExecutor
 
   // cannot use multimap here because need deterministic order
@@ -99,16 +90,16 @@ class GamePacketHandlerWotLK(
         val guidsToRemove: HashSet[Long] = HashSet[Long]()
 
         playersToGroupInvite.foreach { guid =>
-          logger.debug(s"Player group invitation: handling ${guid}...")
+          logger.info(s"Player group invitation: handling ${guid}...")
           var player_name = playerRosterCached.get(guid)
           player_name match {
             case Some(name) =>
-              logger.debug(s"Inviting player '${name}'")
+              logger.info(s"Inviting player '${name}'")
               groupConvertToRaid
               sendGroupInvite(name)
               guidsToRemove += guid
             case None =>
-              logger.debug(
+              logger.info(
                 s"Player invitation:'$guid' not cached, sending name query..."
               )
               sendNameQuery(guid)
@@ -230,7 +221,7 @@ class GamePacketHandlerWotLK(
       message: String,
       target: Option[String]
   ): Unit = {
-    ctx.fold(logger.error("Cannot send message! Not connected to WoW!"))(
+    ctx.fold(logger.info("Cannot send message! Not connected to WoW!"))(
       ctx => {
         ctx.writeAndFlush(
           buildChatMessage(
@@ -309,7 +300,7 @@ class GamePacketHandlerWotLK(
   }
 
   override def groupDisband(): Unit = {
-    logger.debug(s"Disbanding group...")
+    logger.info(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
   }
 
@@ -379,7 +370,7 @@ class GamePacketHandlerWotLK(
       case msg: Packet =>
         channelParse(msg)
         msg.byteBuf.release
-      case msg => logger.error(s"Packet is instance of ${msg.getClass}")
+      case msg => logger.info(s"Packet is instance of ${msg.getClass}")
     }
   }
 
@@ -462,7 +453,7 @@ class GamePacketHandlerWotLK(
       val position = msg.byteBuf.readIntLE
       logger.info(s"Queue enabled. Position: $position")
     } else {
-      logger.error(AuthResponseCodes.getMessage(code))
+      logger.info(AuthResponseCodes.getMessage(code))
       ctx.foreach(_.close)
       gameEventCallback.error
     }
@@ -515,7 +506,7 @@ class GamePacketHandlerWotLK(
       val charClass = msg.byteBuf.readByte
       (name, charClass)
     } else {
-      logger.error(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
+      logger.info(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
       ("UNKNOWN", 0xFF.toByte)
     }
 
@@ -535,7 +526,7 @@ class GamePacketHandlerWotLK(
     }
     receivedCharEnum = true
     parseCharEnum(msg).fold({
-      logger.error(s"Character ${Global.config.wow.character} not found!")
+      logger.info(s"Character ${Global.config.wow.character} not found!")
     })(character => {
       logger.info(s"Logging in with character ${character.name}")
       selfCharacterId = Some(character.guid)
@@ -565,7 +556,7 @@ class GamePacketHandlerWotLK(
   }
 
   override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
-    logger.error(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
+    logger.info(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
 
     val isRaid = msg.byteBuf.readBoolean() // false: group, true: raid
     if (!isRaid) { groupConvertToRaid(); return }
@@ -583,7 +574,7 @@ class GamePacketHandlerWotLK(
       if (Some(isOnline) != cachedOnlineState) {
         cachedOnlineState match {
           case Some(true) => {
-            logger.error(
+            logger.info(
               s"Person went offline! doing the thing ($name -> $isOnline)"
             )
             groupMembers(name) = isOnline
@@ -595,7 +586,7 @@ class GamePacketHandlerWotLK(
           }
         }
       }
-      logger.debug(s"Member #$i: $name - is online: $isOnline")
+      logger.info(s"Member #$i: $name - is online: $isOnline")
     }
 
     val leaderGUID = msg.byteBuf.readLongLE()
@@ -824,7 +815,7 @@ class GamePacketHandlerWotLK(
   }
 
   override protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
-    logger.debug(
+    logger.info(
       s"RECV CHAT: ${ByteUtils.toHexString(msg.byteBuf, true, true)}"
     )
     parseChatMessage(msg).foreach(sendChatMessage)
@@ -832,7 +823,7 @@ class GamePacketHandlerWotLK(
 
   override protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
     val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
-    logger.debug(s"RECV PARTY COMMAND RESULT: ${reply}")
+    logger.info(s"RECV PARTY COMMAND RESULT: ${reply}")
 
     // We get this reply when we don't have rights to invite others
     if (reply == "00 00 00 00 00 06 00 00 00") {
@@ -916,7 +907,7 @@ class GamePacketHandlerWotLK(
       ) || txt.toLowerCase().contains("invite"))
     ) {
       playersToGroupInvite += guid
-      logger.debug(s"PLAYER INVITATION: added $guid to the queue")
+      logger.info(s"PLAYER INVITATION: added $guid to the queue")
     }
 
     if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
@@ -927,7 +918,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  override protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
+  protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
     // This is a guild event so guid MUST be in roster already
     // (unless some weird edge case -> achievement came before roster update)
     guildRoster.get(guid).foreach(player => {
@@ -958,25 +949,25 @@ class GamePacketHandlerWotLK(
       case ChatNotify.CHAT_YOU_JOINED_NOTICE =>
         logger.info(s"Joined Channel: [$channelName]")
       case ChatNotify.CHAT_WRONG_PASSWORD_NOTICE =>
-        logger.error(s"Wrong password for $channelName.")
+        logger.info(s"Wrong password for $channelName.")
       case ChatNotify.CHAT_MUTED_NOTICE =>
-        logger.error(s"[$channelName] You do not have permission to speak.")
+        logger.info(s"[$channelName] You do not have permission to speak.")
       case ChatNotify.CHAT_BANNED_NOTICE =>
-        logger.error(s"[$channelName] You are banned from that channel.")
+        logger.info(s"[$channelName] You are banned from that channel.")
       case ChatNotify.CHAT_WRONG_FACTION_NOTICE =>
-        logger.error(s"Wrong alliance for $channelName.")
+        logger.info(s"Wrong alliance for $channelName.")
       case ChatNotify.CHAT_INVALID_NAME_NOTICE =>
-        logger.error("Invalid channel name")
+        logger.info("Invalid channel name")
       case ChatNotify.CHAT_THROTTLED_NOTICE =>
-        logger.error(
+        logger.info(
           s"[$channelName] The number of messages that can be sent to this channel is limited, please wait to send another message."
         )
       case ChatNotify.CHAT_NOT_IN_AREA_NOTICE =>
-        logger.error(
+        logger.info(
           s"[$channelName] You are not in the correct area for this channel."
         )
       case ChatNotify.CHAT_NOT_IN_LFG_NOTICE =>
-        logger.error(
+        logger.info(
           s"[$channelName] You must be queued in looking for group before joining this channel."
         )
       case _ =>
@@ -1115,7 +1106,7 @@ class GamePacketHandlerWotLK(
 
   private def handle_SMSG_WARDEN_DATA(msg: Packet): Unit = {
     if (Global.config.wow.platform == Platform.Windows) {
-      logger.error(
+      logger.info(
         "WARDEN ON WINDOWS IS NOT SUPPORTED! BOT WILL SOON DISCONNECT! TRY TO USE PLATFORM MAC!"
       )
       return
