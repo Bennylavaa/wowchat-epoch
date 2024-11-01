@@ -291,14 +291,16 @@ logger.info(s"DEBUG: Buffer readable bytes after guid skip: ${msg.byteBuf.readab
 val txtLen = msg.byteBuf.readIntLE
 logger.info(s"DEBUG: txtLen value is $txtLen")
 
+// Read the text message from the buffer
 val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
-logger.info(s"DEBUG: txt value is $txt")
+
+// Log the parsed text value
+logger.info(s"DEBUG: Parsed txt value is '$txt'")
 
 msg.byteBuf.skipBytes(1) // null terminator
 msg.byteBuf.skipBytes(1) // chat tag
-logger.info(s"DEBUG: Buffer position after reading text and skips: ${msg.byteBuf.readerIndex()}")
 
-  // Invite feature:
+// invite feature
 if (tp == 7 && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
   logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
   playersToGroupInvite += guid
