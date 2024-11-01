@@ -1,8 +1,10 @@
-import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.MessageReceivedEvent
+package wowchat.commands
+
 import com.typesafe.scalalogging.StrictLogging
+import net.dv8tion.jda.api.entities.MessageChannel
 import wowchat.common.Global
 import wowchat.game.{GamePackets, GameResources, GuildInfo, GuildMember}
+
 import scala.collection.mutable
 import scala.util.Try
 
@@ -12,34 +14,35 @@ case class WhoResponse(playerName: String, guildName: String, lvl: Int, cls: Str
 object CommandHandler extends StrictLogging {
 
   private val NOT_ONLINE = "Bot is not online."
+
+  // make some of these configurable
   private val trigger = "?"
+
+  // gross. rewrite
   var whoRequest: WhoRequest = _
 
-  // Returns back the message as an option if unhandled
-  def apply(event: MessageReceivedEvent): Boolean = {
-    val fromChannel = event.getTextChannel
-    val message = event.getMessage.getContentRaw
-
+  // returns back the message as an option if unhandled
+  // needs to be refactored into a Map[String, <Intelligent Command Handler Function>]
+  def apply(fromChannel: MessageChannel, message: String): Boolean = {
     if (!Global.config.discord.enableGuildCommands || !message.startsWith(trigger)) {
       return false
     }
 
-    val effectiveName = if (event.isWebhookMessage) event.getAuthor.getName else event.getMember.getEffectiveName
     val splt = message.substring(trigger.length).split(" ")
     val possibleCommand = splt(0).toLowerCase
     val arguments = if (splt.length > 1 && splt(1).length <= 16) Some(splt(1)) else None
 
-    def protectedCommand(commandName: String, callback: () => Option[String]): Option[String] = {
-      val channelId = fromChannel.getId()
-      logger.info(s"Checking if command '$commandName' is allowed in channel: $channelId")
-
-      if (Global.config.discord.protectedGuildCommandChannels.contains(channelId)) {
-        callback()
-      } else {
-        Some(s"Command '${commandName}' not allowed in this channel")
-      }
-    }
-
+	def protectedCommand(commandName: String, callback: () => Option[String]): Option[String] = {
+	val channelId = fromChannel.getId()
+	logger.info(s"Checking if command '$commandName' is allowed in channel: $channelId")
+	
+	  if (Global.config.discord.protectedGuildCommandChannels.contains(channelId)) {
+	  	callback()
+	  } else {
+	  	Some(s"Command '${commandName}' not allowed in this channel")
+	  }
+	}
+	
     Try {
       possibleCommand match {
         case "who" | "online" =>
@@ -59,7 +62,7 @@ object CommandHandler extends StrictLogging {
             return true
           })(_.handleGmotd())
         case "ginvite" =>
-          logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
+		logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
           Global.game.fold({
             fromChannel.sendMessage(NOT_ONLINE).queue()
             return true
@@ -67,9 +70,10 @@ object CommandHandler extends StrictLogging {
             protectedCommand("ginvite", () => {
               arguments match {
                 case Some(name) => {
-                  logger.info(s"Inviting user: $name")
+				  logger.info(s"Inviting user: $name")
                   game.sendGuildInvite(name.toLowerCase)
-                  Some(s"$effectiveName Invited '${name}' to the guild")
+                  Some(s"Invited '${name}' to the guild")
+				  
                 }
                 case None => {
                   Some("no name provided!")
@@ -78,7 +82,7 @@ object CommandHandler extends StrictLogging {
             })
           })
         case "gkick" =>
-          logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
+		logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
           Global.game.fold({
             fromChannel.sendMessage(NOT_ONLINE).queue()
             return true
@@ -86,9 +90,9 @@ object CommandHandler extends StrictLogging {
             protectedCommand("gkick", () => {
               arguments match {
                 case Some(name) => {
-                  logger.info(s"Kicking user: $name")
+				  logger.info(s"Kicking user: $name")
                   game.sendGuildKick(name.toLowerCase)
-                  Some(s"$effectiveName Kicked '${name}' from the guild")
+                  Some(s"Kicked '${name}' from the guild")
                 }
                 case None => {
                   Some("no name provided!")
