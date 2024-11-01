@@ -2,6 +2,8 @@ package wowchat.game
 
 import java.nio.charset.Charset
 import java.security.MessageDigest
+import java.util.concurrent.{Executors, TimeUnit}
+
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.ArrayBuffer
