@@ -299,11 +299,11 @@ msg.byteBuf.skipBytes(1) // chat tag
 logger.info(s"DEBUG: Buffer position after reading text and skips: ${msg.byteBuf.readerIndex()}")
 
   // Invite feature:
-  if (tp == 7 && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
-    logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
-    playersToGroupInvite += guid
-    logger.info(s"PLAYER INVITATION: added $guid to the queue")
-  }
+if (tp == 7 && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
+  logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
+  playersToGroupInvite += guid
+  logger.info(s"PLAYER INVITATION: added $guid to the queue")
+}
 
   if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
     handleAchievementEvent(guid, msg.byteBuf.readIntLE)
