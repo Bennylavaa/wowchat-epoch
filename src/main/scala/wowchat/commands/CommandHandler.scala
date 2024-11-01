@@ -72,7 +72,7 @@ object CommandHandler extends StrictLogging {
             case Some(name) => {
               logger.info(s"Inviting user: $name")
               game.sendGuildInvite(name.toLowerCase)
-              Some(s"$effectiveName Invited '${name}' to the guild") // Use effectiveName here
+              Some(s"```ansi\n\u001b[2;34m[$effectiveName]\u001b[0m \u001b[2;37mhas\u001b[0m \u001b[2;36mInvited\u001b[0m \u001b[2;32m[${name}]\u001b[0m \u001b[2;37mto the guild!\n```")
             }
             case None => {
               Some("no name provided!")
@@ -91,7 +91,7 @@ object CommandHandler extends StrictLogging {
             case Some(name) => {
               logger.info(s"Kicking user: $name")
               game.sendGuildKick(name.toLowerCase)
-              Some(s"$effectiveName Kicked '${name}' from the guild") // Use effectiveName here
+              Some(s"```ansi\n\u001b[2;34m[$effectiveName]\u001b[0m \u001b[2;37mhas\u001b[0m \u001b[2;31mKicked\u001b[0m \u001b[2;32m[${name}]\u001b[0m \u001b[2;37mfrom the guild!\n```")
             }
             case None => {
               Some("no name provided!")

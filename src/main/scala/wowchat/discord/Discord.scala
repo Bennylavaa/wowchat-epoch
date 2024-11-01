@@ -215,6 +215,14 @@ class Discord(discordConnectionCallback: CommonConnectionCallback) extends Liste
     }
   }
 
+  def capitalizeFirstLetter(name: String): String = {
+    if (name.nonEmpty) {
+      name.substring(0, 1).toUpperCase + name.substring(1)
+    } else {
+      name
+    }
+  }
+
   override def onMessageReceived(event: MessageReceivedEvent): Unit = {
     // ignore messages received from self
     if (event.getAuthor.getIdLong == jda.getSelfUser.getIdLong) {
@@ -236,18 +244,19 @@ class Discord(discordConnectionCallback: CommonConnectionCallback) extends Liste
     val channelId = channel.getId
     val channelName = event.getTextChannel.getName.toLowerCase
     val effectiveName = if (event.isWebhookMessage) event.getAuthor.getName else event.getMember.getEffectiveName
+    val capitalizedName = capitalizeFirstLetter(effectiveName) // Capitalize first letter
     val message = (sanitizeMessage(event.getMessage.getContentDisplay) +: event.getMessage.getAttachments.asScala.map(_.getUrl))
       .filter(_.nonEmpty)
       .mkString(" ")
     val enableCommandsChannels = Global.config.discord.enableCommandsChannels
   
-    logger.debug(s"RECV DISCORD MESSAGE: [${channel.getName}] [$effectiveName]: $message")
+    logger.debug(s"RECV DISCORD MESSAGE: [${channel.getName}] [$capitalizedName]: $message")
     if (message.isEmpty) {
       logger.error(s"Received a message in channel ${channel.getName} but the content was empty. You likely forgot to enable MESSAGE CONTENT INTENT for your bot in the Discord Developers portal.")
     }
   
-    // Modify this line to pass effectiveName
-    if ((enableCommandsChannels.nonEmpty && !enableCommandsChannels.contains(channelName)) || !CommandHandler(channel, message, effectiveName)) {
+    // Use capitalizedName instead of effectiveName
+    if ((enableCommandsChannels.nonEmpty && !enableCommandsChannels.contains(channelName)) || !CommandHandler(channel, message, capitalizedName)) {
       // send to all configured wow channels
       Global.discordToWow
         .get(channelName)
@@ -256,7 +265,7 @@ class Discord(discordConnectionCallback: CommonConnectionCallback) extends Liste
           val finalMessages = if (shouldSendDirectly(message)) {
             Seq(message)
           } else {
-            splitUpMessage(channelConfig.format, effectiveName, message)
+            splitUpMessage(channelConfig.format, capitalizedName, message)
           }
   
           finalMessages.foreach(finalMessage => {
