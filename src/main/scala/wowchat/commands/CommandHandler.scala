@@ -32,14 +32,17 @@ object CommandHandler extends StrictLogging {
     val possibleCommand = splt(0).toLowerCase
     val arguments = if (splt.length > 1 && splt(1).length <= 16) Some(splt(1)) else None
 
-    def protectedCommand(commandName: String, callback: () => Option[String]): Option[String] = {
-      if (Global.config.discord.protectedGuildCommandChannels.contains(fromChannel.getId())) {
-        callback()
-      } else {
-        Some(s"Command '${commandName}' not allowed")
-      }
-    }
-
+	def protectedCommand(commandName: String, callback: () => Option[String]): Option[String] = {
+	val channelId = fromChannel.getId()
+	logger.info(s"Checking if command '$commandName' is allowed in channel: $channelId")
+	
+	  if (Global.config.discord.protectedGuildCommandChannels.contains(channelId)) {
+	  	callback()
+	  } else {
+	  	Some(s"Command '${commandName}' not allowed in this channel")
+	  }
+	}
+	
     Try {
       possibleCommand match {
         case "who" | "online" =>
