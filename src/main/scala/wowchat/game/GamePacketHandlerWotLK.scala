@@ -55,21 +55,21 @@ class GamePacketHandlerWotLK(
     0x1C, 0x3E, 0x9E, 0xE1, 0x93, 0xC8, 0x8D
   ).map(_.toByte)
 
-  protected var selfCharacterId: Option[Long] = None
-  protected var languageId: Byte = _
-  protected var inWorld: Boolean = false
-  protected var guildGuid: Long = _
-  protected var guildInfo: GuildInfo = _
-  protected var guildMotd: Option[String] = None
+  override  protected var selfCharacterId: Option[Long] = None
+  override  protected var languageId: Byte = _
+  override  protected var inWorld: Boolean = false
+  override  protected var guildGuid: Long = _
+  override  protected var guildInfo: GuildInfo = _
+  override  protected var guildMotd: Option[String] = None
 
-  protected var ctx: Option[ChannelHandlerContext] = None
-  protected val playerRoster = LRUMap.empty[Long, Player]
-  protected val playerRosterCached = LRUMap.empty[Long, String]
-  protected val playersToGroupInvite: HashSet[Long] = HashSet[Long]()
-  protected val groupMembers = mutable.Map.empty[String, Boolean]
-  protected val guildRoster = mutable.Map.empty[Long, GuildMember]
-  protected var lastRequestedGuildRoster: Long = _
-  protected val executorService = Executors.newSingleThreadScheduledExecutor
+  override  protected var ctx: Option[ChannelHandlerContext] = None
+  override  protected val playerRoster = LRUMap.empty[Long, Player]
+  override  protected val playerRosterCached = LRUMap.empty[Long, String]
+  override  protected val playersToGroupInvite: HashSet[Long] = HashSet[Long]()
+  override  protected val groupMembers = mutable.Map.empty[String, Boolean]
+  override  protected val guildRoster = mutable.Map.empty[Long, GuildMember]
+  override  protected var lastRequestedGuildRoster: Long = _
+  override  protected val executorService = Executors.newSingleThreadScheduledExecutor
 
   // cannot use multimap here because need deterministic order
   private val queuedChatMessages =
