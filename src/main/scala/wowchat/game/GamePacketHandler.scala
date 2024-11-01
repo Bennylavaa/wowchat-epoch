@@ -567,7 +567,7 @@ class GamePacketHandler(
   }
 
   protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
-    logger.error(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
+    logger.debug(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
 
     val isRaid = msg.byteBuf.readBoolean() // false: group, true: raid
     if (!isRaid) { groupConvertToRaid(); return }
@@ -585,7 +585,7 @@ class GamePacketHandler(
       if (Some(isOnline) != cachedOnlineState) {
         cachedOnlineState match {
           case Some(true) => {
-            logger.error(
+            logger.debug(
               s"Person went offline! doing the thing ($name -> $isOnline)"
             )
             groupMembers(name) = isOnline
@@ -597,7 +597,7 @@ class GamePacketHandler(
           }
         }
       }
-      logger.info(s"Member #$i: $name - is online: $isOnline")
+      logger.debug(s"Member #$i: $name - is online: $isOnline")
     }
 
     val leaderGUID = msg.byteBuf.readLongLE()

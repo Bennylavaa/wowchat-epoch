@@ -148,7 +148,7 @@ protected def buildSingleStringPacketWRATH(
 }
 
 override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
-    logger.error(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
+    logger.debug(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
 
     val groupType = msg.byteBuf.readByte() // u8 group_type
     val groupId = msg.byteBuf.readByte()   // u8 group_id
@@ -168,7 +168,7 @@ override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
       if (Some(isOnline) != cachedOnlineState) {
         cachedOnlineState match {
           case Some(true) => {
-            logger.error(
+            logger.debug(
               s"Person went offline! doing the thing ($name -> $isOnline)"
             )
             groupMembers(name) = isOnline
@@ -180,7 +180,7 @@ override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
           }
         }
       }
-      logger.info(s"Member #$i: $name - is online: $isOnline")
+      logger.debug(s"Member #$i: $name - is online: $isOnline")
     }
 
     val leaderGuid = msg.byteBuf.readLongLE() // Guid leader
