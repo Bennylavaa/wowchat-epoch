@@ -23,31 +23,6 @@ import scala.io.Source
 import scala.util.control.Breaks.{breakable, break}
 import scala.util.Random
 
-case class Player(name: String, charClass: Byte)
-case class GuildMember(
-    name: String,
-    isOnline: Boolean,
-    charClass: Byte,
-    level: Byte,
-    zoneId: Int,
-    lastLogoff: Float
-)
-case class ChatMessage(
-    guid: Long,
-    tp: Byte,
-    message: String,
-    channel: Option[String] = None
-)
-case class NameQueryMessage(guid: Long, name: String, charClass: Byte)
-case class AuthChallengeMessage(sessionKey: Array[Byte], byteBuf: ByteBuf)
-case class CharEnumMessage(
-    name: String,
-    guid: Long,
-    race: Byte,
-    guildGuid: Long
-)
-case class GuildInfo(name: String, ranks: Map[Int, String])
-
 class GamePacketHandlerWotLK(
     realmId: Int,
     realmName: String,
