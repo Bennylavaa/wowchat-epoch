@@ -222,13 +222,10 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     msg.byteBuf.skipBytes(1) // null terminator
     msg.byteBuf.skipBytes(1) // chat tag
     // invite feature:
-    if (
-      tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains(
-        "camp"
-      ) || txt.toLowerCase().contains("invite"))
-    ) {
-      playersToGroupInvite += guid
-      logger.info(s"PLAYER INVITATION: added $guid to the queue")
+    if (tp == ChatEvents.CHAT_MSG_WHISPER && txt.toLowerCase.contains("camp")) {
+      playersToInvite += guid
+      logger.debug(s"PLAYER INVITATION: added $guid to the queue")
+      return None
     }
 	
     if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
