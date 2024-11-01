@@ -130,7 +130,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     None
   }
 
-  override private def runGroupInviteExecutor: Unit = {
+  private def runGroupInviteExecutor: Unit = {
     executorService.scheduleWithFixedDelay(() => {
       val guidsToRemove: HashSet[Long] = HashSet[Long]()
       playersToGroupInvite.foreach { guid =>
@@ -168,7 +168,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
   override def sendGuildKick(name: String): Unit = {
     ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GUILD_REMOVE))
   }
-  override protected def buildSingleStringPacket(name: String, opcode: Int): Packet = {
+  protected def buildSingleStringPacket(name: String, opcode: Int): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
     byteBuf.writeBytes(name.toLowerCase.getBytes("UTF-8"))
     byteBuf.writeByte(0)
