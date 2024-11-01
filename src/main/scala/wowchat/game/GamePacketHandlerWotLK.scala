@@ -37,8 +37,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     0x09, 0xFA, 0x13, 0xB8, 0x42, 0x01, 0xDD, 0xC4, 0x31, 0x6E, 0x31, 0x0B, 0xCA, 0x5F, 0x7B, 0x7B,
     0x1C, 0x3E, 0x9E, 0xE1, 0x93, 0xC8, 0x8D
   ).map(_.toByte)
-  
-  override protected val groupMembers = mutable.Map.empty[String, Boolean]
+
   override protected def parseAuthChallenge(msg: Packet): AuthChallengeMessage = {
     val account = Global.config.wow.account
 
@@ -85,61 +84,11 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
       val charClass = msg.byteBuf.readByte
       (name, charClass)
     } else {
-      logger.info(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
+      logger.error(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
       ("UNKNOWN", 0xFF.toByte)
     }
 
     NameQueryMessage(guid, name, charClass)
-  }
-  
-  override def readString(buf: ByteBuf): String = {
-    val ret = ArrayBuffer.newBuilder[Byte]
-    breakable {
-      while (buf.readableBytes > 0) {
-        val value = buf.readByte
-        if (value == 0) {
-          break
-        }
-        ret += value
-      }
-    }
-    Source.fromBytes(ret.result.toArray, "UTF-8").mkString
-  }
-  override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
-    logger.info(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
-    val groupType = msg.byteBuf.readByte // 0: group, 1: raid
-    msg.byteBuf.skipBytes(1) // flags
-    val memberCount = msg.byteBuf.readIntLE()
-    for (i <- 1 to memberCount) {
-      val name = readString(msg.byteBuf)
-      msg.byteBuf.skipBytes(8) // guid
-      val isOnline = msg.byteBuf.readBoolean
-      msg.byteBuf.skipBytes(1) // flags
-      val cachedOnlineState = groupMembers.get(name)
-      if (Some(isOnline) != cachedOnlineState) {
-        cachedOnlineState match {
-          case Some(true) => {
-            groupMembers(name) = isOnline
-            sendGroupKick(name) // sendResetInstances()
-          }
-          case _  => {
-            groupMembers(name) = isOnline
-          }
-        }
-      }
-      logger.info(s"Member #$i: $name - is online: $isOnline")
-    }
-    val leaderGUID = msg.byteBuf.readBytes(8)
-    val groupLootSetting =
-      msg.byteBuf
-        .readByte() // 0: FFA, 1: RR, 2: ML, 3: Group loot, 4: Need before greed
-    val masterLooterGUID = msg.byteBuf.readBytes(8)
-    val lootQuality = msg.byteBuf.readByte() // 2: uncommon, 3: rare, 4: epic
-    msg.byteBuf.skipBytes(1) // null-termination
-    logger.info(
-      s"leader GUID: ${ByteUtils.toHexString(leaderGUID)}, group loot setting: $groupLootSetting, ml guid: ${ByteUtils
-          .toHexString(masterLooterGUID)}, loot quality: $lootQuality"
-    )
   }
 
   override protected def parseCharEnum(msg: Packet): Option[CharEnumMessage] = {
@@ -180,54 +129,11 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     None
   }
 
-  private def runGroupInviteExecutor: Unit = {
-    executorService.scheduleWithFixedDelay(() => {
-      val guidsToRemove: HashSet[Long] = HashSet[Long]()
-      playersToGroupInvite.foreach { guid =>
-        logger.info(s"Player group invitation: handling ${guid}...")
-        var player_name = playerRosterCached.get(guid)
-        player_name match {
-          case Some(name) =>
-            logger.info(s"Inviting player '${name}'")
-            groupConvertToRaid
-            sendGroupInvite(name)
-            guidsToRemove += guid
-          case None =>
-            logger.info(s"Player invitation:'$guid' not cached, sending name query...")
-            sendNameQuery(guid)
-        }
-      }
-      guidsToRemove.foreach(playersToGroupInvite.remove)
-    }, 3, 3, TimeUnit.SECONDS)
-  }
-
-  protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
-    // This is a guild event so guid MUST be in roster already
-    // (unless some weird edge case -> achievement came before roster update)
-    guildRoster.get(guid).foreach(player => {
-      Global.discord.sendAchievementNotification(player.name, achievementId)
-    })
-  }
-
   override protected def sendGroupInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase()))
+    ctx.get.writeAndFlush(buildSingleStringPacketWRATH(CMSG_GROUP_INVITE, name.toLowerCase()))
   }
-  override def sendGroupKick(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GROUP_KICK, name.toLowerCase()))
-  }
-  override def sendGroupKickUUID(name_uuid: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GROUP_KICK_UUID, name_uuid))
-  }
-  override def sendGuildInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GUILD_INVITE, name.toLowerCase()))
-  }
-  override def sendGuildKick(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GUILD_REMOVE, name.toLowerCase()))
-  }
-  override def sendResetInstances(): Unit = {
-    ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
-  }
-override protected def buildSingleStringPacket(
+  
+protected def buildSingleStringPacketWRATH(
     opcode: Int,
     string_param: String
 ): Packet = {
@@ -240,22 +146,6 @@ override protected def buildSingleStringPacket(
     byteBuf.writeInt(0)                 // Additional UInt32 (0x0) as required by WotLK
     Packet(opcode, byteBuf)
 }
-  override def groupDisband(): Unit = {
-    logger.info(s"Disbanding group...")
-    ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
-  }
-  override def groupConvertToRaid(): Unit = {
-    ctx.get.writeAndFlush(Packet(CMSG_GROUP_RAID_CONVERT))
-  }
-
-  override protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
-    val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
-    logger.info(s"RECV PARTY COMMAND RESULT: ${reply}")
-    // We get this reply when we don't have rights to invite others
-    if (reply == "00 00 00 00 00 06 00 00 00") {
-      groupDisband()
-    }
-  }
 
 override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   // Read the type of chat message
@@ -311,13 +201,11 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   msg.byteBuf.skipBytes(1) // chat tag
 
   // Check for whispers containing 'camp' or 'invite'
-  if (tp == 7 && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
-    logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
+  if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
     playersToGroupInvite += guid
     logger.info(s"PLAYER INVITATION: added $guid to the queue")
   }
 
-  // **New Placement Here**
   // Skip unhandled channel messages unless it's a guild achievement message
   if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
     logger.info(s"DEBUG: Skipping unhandled channel message of type $tp")
@@ -334,9 +222,13 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   }
 }
 
-
-
-
+  protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
+    // This is a guild event so guid MUST be in roster already
+    // (unless some weird edge case -> achievement came before roster update)
+    guildRoster.get(guid).foreach(player => {
+      Global.discord.sendAchievementNotification(player.name, achievementId)
+    })
+  }
 
   // saving those single 0 bytes like whoa
   private def unpackGuid(byteBuf: ByteBuf): Long = {
