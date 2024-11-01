@@ -250,57 +250,67 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     }
   }
 
-  override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
-    val tp = msg.byteBuf.readByte
+override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
+  val tp = msg.byteBuf.readByte
+  logger.info(s"DEBUG: tp value is $tp")  // Log the message type
 
-    val lang = msg.byteBuf.readIntLE
-    // ignore addon messages
-    if (lang == -1) {
-      return None
-    }
-
-    // ignore messages from itself, unless it is a system message.
-    val guid = msg.byteBuf.readLongLE
-    if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
-      return None
-    }
-
-    msg.byteBuf.skipBytes(4)
-
-    if (msg.id == SMSG_GM_MESSAGECHAT) {
-      msg.byteBuf.skipBytes(4)
-      msg.skipString
-    }
-
-    val channelName = if (tp == ChatEvents.CHAT_MSG_CHANNEL) {
-      Some(msg.readString)
-    } else {
-      None
-    }
-
-    // ignore if from an unhandled channel - unless it is a guild achievement message
-    if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
-      return None
-    }
-
-    msg.byteBuf.skipBytes(8) // skip guid again
-
-    val txtLen = msg.byteBuf.readIntLE
-    val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
-    msg.byteBuf.skipBytes(1) // null terminator
-    msg.byteBuf.skipBytes(1) // chat tag
-    // invite feature:
-    if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase().contains("invite"))) {
-      logger.info(s"DEBUG: Detected whisper message with text: $txt and guid: $guid")
-    }
-	
-    if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
-      handleAchievementEvent(guid, msg.byteBuf.readIntLE)
-      None
-    } else {
-      Some(ChatMessage(guid, tp, txt, channelName))
-    }
+  val lang = msg.byteBuf.readIntLE
+  // ignore addon messages
+  if (lang == -1) {
+    logger.info("DEBUG: Skipping addon message due to lang == -1")
+    return None
   }
+
+  val guid = msg.byteBuf.readLongLE
+  if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
+    logger.info(s"DEBUG: Skipping message from self, guid: $guid")
+    return None
+  }
+
+  msg.byteBuf.skipBytes(4)
+
+  if (msg.id == SMSG_GM_MESSAGECHAT) {
+    msg.byteBuf.skipBytes(4)
+    msg.skipString
+  }
+
+  val channelName = if (tp == ChatEvents.CHAT_MSG_CHANNEL) {
+    Some(msg.readString)
+  } else {
+    None
+  }
+
+  if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
+    logger.info(s"DEBUG: Skipping unhandled channel message of type $tp")
+    return None
+  }
+
+  msg.byteBuf.skipBytes(8) // skip guid again
+
+  val txtLen = msg.byteBuf.readIntLE
+  logger.info(s"DEBUG: txtLen value is $txtLen")  // Log the text length
+
+  val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
+  logger.info(s"DEBUG: txt value is $txt")  // Log the text content
+
+  msg.byteBuf.skipBytes(1) // null terminator
+  msg.byteBuf.skipBytes(1) // chat tag
+
+  // Invite feature:
+  if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
+    logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
+    playersToGroupInvite += guid
+    logger.info(s"PLAYER INVITATION: added $guid to the queue")
+  }
+
+  if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
+    handleAchievementEvent(guid, msg.byteBuf.readIntLE)
+    None
+  } else {
+    Some(ChatMessage(guid, tp, txt, channelName))
+  }
+}
+
 
   // saving those single 0 bytes like whoa
   private def unpackGuid(byteBuf: ByteBuf): Long = {
