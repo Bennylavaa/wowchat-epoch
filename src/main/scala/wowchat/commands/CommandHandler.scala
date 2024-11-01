@@ -59,6 +59,7 @@ object CommandHandler extends StrictLogging {
             return true
           })(_.handleGmotd())
         case "ginvite" =>
+		logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
           Global.game.fold({
             fromChannel.sendMessage(NOT_ONLINE).queue()
             return true
@@ -66,6 +67,7 @@ object CommandHandler extends StrictLogging {
             protectedCommand("ginvite", () => {
               arguments match {
                 case Some(name) => {
+				  logger.info(s"Inviting user: $name")
                   game.sendGuildInvite(name.toLowerCase)
                   Some(s"Invited '${name}' to the guild")
                 }
@@ -76,6 +78,7 @@ object CommandHandler extends StrictLogging {
             })
           })
         case "gkick" =>
+		logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
           Global.game.fold({
             fromChannel.sendMessage(NOT_ONLINE).queue()
             return true
@@ -83,6 +86,7 @@ object CommandHandler extends StrictLogging {
             protectedCommand("gkick", () => {
               arguments match {
                 case Some(name) => {
+				  logger.info(s"Kicking user: $name")
                   game.sendGuildKick(name.toLowerCase)
                   Some(s"Kicked '${name}' from the guild")
                 }
