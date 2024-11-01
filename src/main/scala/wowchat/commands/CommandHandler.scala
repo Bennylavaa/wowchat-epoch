@@ -23,7 +23,7 @@ object CommandHandler extends StrictLogging {
 
   // returns back the message as an option if unhandled
   // needs to be refactored into a Map[String, <Intelligent Command Handler Function>]
-  def apply(fromChannel: MessageChannel, message: String): Boolean = {
+  def apply(fromChannel: MessageChannel, message: String, effectiveName: String): Boolean = {
     if (!Global.config.discord.enableGuildCommands || !message.startsWith(trigger)) {
       return false
     }
@@ -61,45 +61,44 @@ object CommandHandler extends StrictLogging {
             fromChannel.sendMessage(NOT_ONLINE).queue()
             return true
           })(_.handleGmotd())
-        case "ginvite" =>
-		logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
-          Global.game.fold({
-            fromChannel.sendMessage(NOT_ONLINE).queue()
-            return true
-          })(game => {
-            protectedCommand("ginvite", () => {
-              arguments match {
-                case Some(name) => {
-				  logger.info(s"Inviting user: $name")
-                  game.sendGuildInvite(name.toLowerCase)
-                  Some(s"Invited '${name}' to the guild")
-				  
-                }
-                case None => {
-                  Some("no name provided!")
-                }
-              }
-            })
-          })
-        case "gkick" =>
-		logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
-          Global.game.fold({
-            fromChannel.sendMessage(NOT_ONLINE).queue()
-            return true
-          })(game => {
-            protectedCommand("gkick", () => {
-              arguments match {
-                case Some(name) => {
-				  logger.info(s"Kicking user: $name")
-                  game.sendGuildKick(name.toLowerCase)
-                  Some(s"Kicked '${name}' from the guild")
-                }
-                case None => {
-                  Some("no name provided!")
-                }
-              }
-            })
-          })
+    case "ginvite" =>
+      logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
+      Global.game.fold({
+        fromChannel.sendMessage(NOT_ONLINE).queue()
+        return true
+      })(game => {
+        protectedCommand("ginvite", () => {
+          arguments match {
+            case Some(name) => {
+              logger.info(s"Inviting user: $name")
+              game.sendGuildInvite(name.toLowerCase)
+              Some(s"$effectiveName Invited '${name}' to the guild") // Use effectiveName here
+            }
+            case None => {
+              Some("no name provided!")
+            }
+          }
+        })
+      })
+    case "gkick" =>
+      logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
+      Global.game.fold({
+        fromChannel.sendMessage(NOT_ONLINE).queue()
+        return true
+      })(game => {
+        protectedCommand("gkick", () => {
+          arguments match {
+            case Some(name) => {
+              logger.info(s"Kicking user: $name")
+              game.sendGuildKick(name.toLowerCase)
+              Some(s"$effectiveName Kicked '${name}' from the guild") // Use effectiveName here
+            }
+            case None => {
+              Some("no name provided!")
+            }
+          }
+        })
+      })
         case "help" =>
           Global.game.fold({
             fromChannel.sendMessage(NOT_ONLINE).queue()

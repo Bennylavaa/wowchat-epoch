@@ -220,18 +220,18 @@ class Discord(discordConnectionCallback: CommonConnectionCallback) extends Liste
     if (event.getAuthor.getIdLong == jda.getSelfUser.getIdLong) {
       return
     }
-
+  
     // ignore messages from non-text channels
     if (event.getChannelType != ChannelType.TEXT) {
       return
     }
-
+  
     // ignore non-default messages
     val messageType = event.getMessage.getType
     if (messageType != MessageType.DEFAULT && messageType != MessageType.INLINE_REPLY) {
       return
     }
-
+  
     val channel = event.getChannel
     val channelId = channel.getId
     val channelName = event.getTextChannel.getName.toLowerCase
@@ -240,12 +240,14 @@ class Discord(discordConnectionCallback: CommonConnectionCallback) extends Liste
       .filter(_.nonEmpty)
       .mkString(" ")
     val enableCommandsChannels = Global.config.discord.enableCommandsChannels
+  
     logger.debug(s"RECV DISCORD MESSAGE: [${channel.getName}] [$effectiveName]: $message")
     if (message.isEmpty) {
       logger.error(s"Received a message in channel ${channel.getName} but the content was empty. You likely forgot to enable MESSAGE CONTENT INTENT for your bot in the Discord Developers portal.")
     }
-
-    if ((enableCommandsChannels.nonEmpty && !enableCommandsChannels.contains(channelName)) || !CommandHandler(channel, message)) {
+  
+    // Modify this line to pass effectiveName
+    if ((enableCommandsChannels.nonEmpty && !enableCommandsChannels.contains(channelName)) || !CommandHandler(channel, message, effectiveName)) {
       // send to all configured wow channels
       Global.discordToWow
         .get(channelName)
@@ -256,7 +258,7 @@ class Discord(discordConnectionCallback: CommonConnectionCallback) extends Liste
           } else {
             splitUpMessage(channelConfig.format, effectiveName, message)
           }
-
+  
           finalMessages.foreach(finalMessage => {
             val filter = shouldFilter(channelConfig.filters, finalMessage)
             logger.info(s"${if (filter) "FILTERED " else ""}Discord->WoW(${
