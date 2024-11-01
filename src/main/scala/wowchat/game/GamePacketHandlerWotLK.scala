@@ -663,6 +663,197 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
   }
   }
 
+  private def handle_SMSG_CHANNEL_NOTIFY(msg: Packet): Unit = {
+    val id = msg.byteBuf.readByte
+    val channelName = msg.readString
+
+    id match {
+      case ChatNotify.CHAT_YOU_JOINED_NOTICE =>
+        logger.info(s"Joined Channel: [$channelName]")
+      case ChatNotify.CHAT_WRONG_PASSWORD_NOTICE =>
+        logger.error(s"Wrong password for $channelName.")
+      case ChatNotify.CHAT_MUTED_NOTICE =>
+        logger.error(s"[$channelName] You do not have permission to speak.")
+      case ChatNotify.CHAT_BANNED_NOTICE =>
+        logger.error(s"[$channelName] You are banned from that channel.")
+      case ChatNotify.CHAT_WRONG_FACTION_NOTICE =>
+        logger.error(s"Wrong alliance for $channelName.")
+      case ChatNotify.CHAT_INVALID_NAME_NOTICE =>
+        logger.error("Invalid channel name")
+      case ChatNotify.CHAT_THROTTLED_NOTICE =>
+        logger.error(
+          s"[$channelName] The number of messages that can be sent to this channel is limited, please wait to send another message."
+        )
+      case ChatNotify.CHAT_NOT_IN_AREA_NOTICE =>
+        logger.error(
+          s"[$channelName] You are not in the correct area for this channel."
+        )
+      case ChatNotify.CHAT_NOT_IN_LFG_NOTICE =>
+        logger.error(
+          s"[$channelName] You must be queued in looking for group before joining this channel."
+        )
+      case _ =>
+      // ignore all other chat notifications
+    }
+  }
+
+  private def handle_SMSG_NOTIFICATION(msg: Packet): Unit = {
+    logger.info(s"Notification: ${parseNotification(msg)}")
+  }
+
+  protected def parseNotification(msg: Packet): String = {
+    msg.readString
+  }
+
+  // This is actually really hard to map back to a specific request
+  // because the packet doesn't include a cookie/id/requested name if none found
+  private def handle_SMSG_WHO(msg: Packet): Unit = {
+    val displayResults = parseWhoResponse(msg)
+    // Try to find exact match
+    val exactName = CommandHandler.whoRequest.playerName.toLowerCase
+    val exactMatch = displayResults.find(_.playerName.toLowerCase == exactName)
+    val handledResponses = CommandHandler.handleWhoResponse(
+      exactMatch,
+      guildInfo,
+      guildRoster,
+      guildMember =>
+        guildMember.name.equalsIgnoreCase(CommandHandler.whoRequest.playerName)
+    )
+    if (handledResponses.isEmpty) {
+      // Exact match not found and no exact match in guild roster. Look for approximate matches.
+      if (displayResults.isEmpty) {
+        // No approximate matches found online. Try to find some in guild roster.
+        val approximateMatches = CommandHandler.handleWhoResponse(
+          exactMatch,
+          guildInfo,
+          guildRoster,
+          guildMember => guildMember.name.toLowerCase.contains(exactName)
+        )
+        if (approximateMatches.isEmpty) {
+          // No approximate matches found.
+          CommandHandler.whoRequest.messageChannel
+            .sendMessage(
+              s"No player named ${CommandHandler.whoRequest.playerName} is currently playing."
+            )
+            .queue()
+        } else {
+          // Send at most 3 approximate matches.
+          approximateMatches
+            .take(3)
+            .foreach(
+              CommandHandler.whoRequest.messageChannel.sendMessage(_).queue()
+            )
+        }
+      } else {
+        // Approximate matches found online!
+        displayResults
+          .take(3)
+          .foreach(whoResponse => {
+            CommandHandler
+              .handleWhoResponse(
+                Some(whoResponse),
+                guildInfo,
+                guildRoster,
+                guildMember =>
+                  guildMember.name
+                    .equalsIgnoreCase(CommandHandler.whoRequest.playerName)
+              )
+              .foreach(
+                CommandHandler.whoRequest.messageChannel.sendMessage(_).queue()
+              )
+          })
+      }
+    } else {
+      handledResponses.foreach(
+        CommandHandler.whoRequest.messageChannel.sendMessage(_).queue()
+      )
+    }
+  }
+
+  protected def parseWhoResponse(msg: Packet): Seq[WhoResponse] = {
+    val displayCount = msg.byteBuf.readIntLE
+    val matchCount = msg.byteBuf.readIntLE
+
+    if (displayCount == 0) {
+      Seq.empty
+    } else {
+      (0 until displayCount).map(i => {
+        val playerName = msg.readString
+        val guildName = msg.readString
+        val lvl = msg.byteBuf.readIntLE
+        val cls = Classes.valueOf(msg.byteBuf.readIntLE.toByte)
+        val race = Races.valueOf(msg.byteBuf.readIntLE.toByte)
+        val gender = if (WowChatConfig.getExpansion != WowExpansion.Vanilla) {
+          Some(Genders.valueOf(msg.byteBuf.readByte)) // tbc/wotlk only
+        } else {
+          None
+        }
+        val zone = msg.byteBuf.readIntLE
+        WhoResponse(
+          playerName,
+          guildName,
+          lvl,
+          cls,
+          race,
+          gender,
+          GameResources.AREA.getOrElse(zone, "Unknown Zone")
+        )
+      })
+    }
+  }
+
+  private def handle_SMSG_SERVER_MESSAGE(msg: Packet): Unit = {
+    val tp = msg.byteBuf.readIntLE
+    val txt = msg.readString
+    val message = tp match {
+      case ServerMessageType.SERVER_MSG_SHUTDOWN_TIME => s"Shutdown in $txt"
+      case ServerMessageType.SERVER_MSG_RESTART_TIME  => s"Restart in $txt"
+      case ServerMessageType.SERVER_MSG_SHUTDOWN_CANCELLED =>
+        "Shutdown cancelled."
+      case ServerMessageType.SERVER_MSG_RESTART_CANCELLED =>
+        "Restart cancelled."
+      case _ => txt
+    }
+    sendChatMessage(ChatMessage(0, ChatEvents.CHAT_MSG_SYSTEM, message, None))
+  }
+
+  private def handle_SMSG_INVALIDATE_PLAYER(msg: Packet): Unit = {
+    val guid = parseInvalidatePlayer(msg)
+    playerRoster.remove(guid)
+  }
+
+  protected def parseInvalidatePlayer(msg: Packet): Long = {
+    msg.byteBuf.readLongLE
+  }
+
+  private def handle_SMSG_WARDEN_DATA(msg: Packet): Unit = {
+    if (Global.config.wow.platform == Platform.Windows) {
+      logger.error(
+        "WARDEN ON WINDOWS IS NOT SUPPORTED! BOT WILL SOON DISCONNECT! TRY TO USE PLATFORM MAC!"
+      )
+      return
+    }
+
+    if (wardenHandler.isEmpty) {
+      wardenHandler = Some(initializeWardenHandler)
+      logger.info("Warden handling initialized!")
+    }
+
+    val (id, out) = wardenHandler.get.handle(msg)
+    if (out.isDefined) {
+      ctx.get.writeAndFlush(Packet(CMSG_WARDEN_DATA, out.get))
+      // Sometimes servers do not allow char listing request until warden is successfully answered.
+      // Try requesting it here again.
+      if (id == WardenPackets.WARDEN_SMSG_HASH_REQUEST) {
+        sendCharEnum
+      }
+    }
+  }
+
+  protected def initializeWardenHandler: WardenHandler = {
+    new WardenHandler(sessionKey)
+  }
+
   protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
     // This is a guild event so guid MUST be in roster already
     // (unless some weird edge case -> achievement came before roster update)
