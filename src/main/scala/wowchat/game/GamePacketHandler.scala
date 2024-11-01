@@ -284,7 +284,7 @@ class GamePacketHandler(
 
   protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
+      buildInviteMessage(CMSG_GROUP_INVITE, name.toLowerCase())
     )
   }
 
@@ -325,7 +325,19 @@ class GamePacketHandler(
     byteBuf.writeByte(0)
     Packet(opcode, byteBuf)
   }
-
+      
+  protected def sendInvite(name: String): Unit = {
+    ctx.get.writeAndFlush(buildInviteMessage(name))
+  }
+      
+protected def buildInviteMessage(name: String): Packet = {
+  val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 20)  // Increased buffer to accommodate name and additional int
+  byteBuf.writeBytes(name.toLowerCase.getBytes("UTF-8"))       // Write the player name in lowercase
+  byteBuf.writeByte(0)                                         // Null terminator for the string
+  byteBuf.writeInt(0)                                          // Additional 4-byte integer as required by Wrath
+  Packet(CMSG_GROUP_INVITE, byteBuf)                           // Construct the packet with the new buffer
+}
+      
   def groupDisband(): Unit = {
     logger.debug(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
