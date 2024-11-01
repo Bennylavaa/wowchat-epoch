@@ -285,19 +285,21 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
     return None
   }
 
-  msg.byteBuf.skipBytes(8) // skip guid again
+msg.byteBuf.skipBytes(8) // skip guid again
+logger.info(s"DEBUG: Buffer readable bytes after guid skip: ${msg.byteBuf.readableBytes()}")
 
-  val txtLen = msg.byteBuf.readIntLE
-  logger.info(s"DEBUG: txtLen value is $txtLen")  // Log the text length
+val txtLen = msg.byteBuf.readIntLE
+logger.info(s"DEBUG: txtLen value is $txtLen")
 
-  val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
-  logger.info(s"DEBUG: txt value is $txt")  // Log the text content
+val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
+logger.info(s"DEBUG: txt value is $txt")
 
-  msg.byteBuf.skipBytes(1) // null terminator
-  msg.byteBuf.skipBytes(1) // chat tag
+msg.byteBuf.skipBytes(1) // null terminator
+msg.byteBuf.skipBytes(1) // chat tag
+logger.info(s"DEBUG: Buffer position after reading text and skips: ${msg.byteBuf.readerIndex()}")
 
   // Invite feature:
-  if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
+  if (tp == 7 && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
     logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
     playersToGroupInvite += guid
     logger.info(s"PLAYER INVITATION: added $guid to the queue")
