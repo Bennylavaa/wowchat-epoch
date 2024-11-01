@@ -829,7 +829,7 @@ class GamePacketHandler(
   }
 
   protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
-    logger.info(
+    logger.debug(
       s"RECV CHAT: ${ByteUtils.toHexString(msg.byteBuf, true, true)}"
     )
     parseChatMessage(msg).foreach(sendChatMessage)
