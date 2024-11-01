@@ -127,6 +127,61 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     None
   }
 
+  private def runPlayerInviteExecutor: Unit = {
+    executorService.scheduleWithFixedDelay(() => {
+      val guidsToRemove: HashSet[Long] = HashSet[Long]()
+      playersToInvite.foreach { guid =>
+        logger.info(s"Player invitation: handling ${guid}...")
+        var player_name = playerRosterCached.get(guid)
+        player_name match {
+          case Some(name) =>
+            logger.info(s"Inviting player '${name}'")
+            groupConvertToRaid
+            sendInvite(name)
+            guidsToRemove += guid
+          case None =>
+            logger.info(s"Player invitation:'$guid' not cached, sending name query...")
+            sendNameQuery(guid)
+        }
+      }
+      guidsToRemove.foreach(playersToInvite.remove)
+    }, 3, 3, TimeUnit.SECONDS)
+  }
+
+  protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
+    // This is a guild event so guid MUST be in roster already
+    // (unless some weird edge case -> achievement came before roster update)
+    guildRoster.get(guid).foreach(player => {
+      Global.discord.sendAchievementNotification(player.name, achievementId)
+    })
+  }
+
+  override protected def sendInvite(name: String): Unit = {
+    ctx.get.writeAndFlush(buildInviteMessage(name))
+  }
+  override protected def buildInviteMessage(name: String): Packet = {
+    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
+    byteBuf.writeBytes(name.toLowerCase.getBytes("UTF-8"))
+    byteBuf.writeByte(0)
+    Packet(CMSG_GROUP_INVITE, byteBuf)
+  }
+  def groupDisband(): Unit = {
+    logger.info(s"Disbanding group...")
+    ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
+  }
+  def groupConvertToRaid(): Unit = {
+    ctx.get.writeAndFlush(Packet(CMSG_GROUP_RAID_CONVERT))
+  }
+
+  override protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
+    val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
+    logger.debug(s"RECV PARTY COMMAND RESULT: ${reply}")
+    // We get this reply when we don't have rights to invite others
+    if (reply == "00 00 00 00 00 06 00 00 00") {
+      groupDisband()
+    }
+  }
+
   override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
     val tp = msg.byteBuf.readByte
 
@@ -182,14 +237,6 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     } else {
       Some(ChatMessage(guid, tp, txt, channelName))
     }
-  }
-
-  protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
-    // This is a guild event so guid MUST be in roster already
-    // (unless some weird edge case -> achievement came before roster update)
-    guildRoster.get(guid).foreach(player => {
-      Global.discord.sendAchievementNotification(player.name, achievementId)
-    })
   }
 
   // saving those single 0 bytes like whoa
