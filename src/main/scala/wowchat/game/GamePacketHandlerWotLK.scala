@@ -38,7 +38,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     0x1C, 0x3E, 0x9E, 0xE1, 0x93, 0xC8, 0x8D
   ).map(_.toByte)
   
-  protected val playersToInvite: HashSet[Long] = HashSet[Long]()
+
   override protected def parseAuthChallenge(msg: Packet): AuthChallengeMessage = {
     val account = Global.config.wow.account
 
@@ -130,24 +130,24 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     None
   }
 
-  private def runPlayerInviteExecutor: Unit = {
+  override private def runGroupInviteExecutor: Unit = {
     executorService.scheduleWithFixedDelay(() => {
       val guidsToRemove: HashSet[Long] = HashSet[Long]()
-      playersToInvite.foreach { guid =>
-        logger.info(s"Player invitation: handling ${guid}...")
+      playersToGroupInvite.foreach { guid =>
+        logger.info(s"Player group invitation: handling ${guid}...")
         var player_name = playerRosterCached.get(guid)
         player_name match {
           case Some(name) =>
             logger.info(s"Inviting player '${name}'")
             groupConvertToRaid
-            sendInvite(name)
+            sendGroupInvite(name)
             guidsToRemove += guid
           case None =>
             logger.info(s"Player invitation:'$guid' not cached, sending name query...")
             sendNameQuery(guid)
         }
       }
-      guidsToRemove.foreach(playersToInvite.remove)
+      guidsToRemove.foreach(playersToGroupInvite.remove)
     }, 3, 3, TimeUnit.SECONDS)
   }
 
@@ -159,14 +159,20 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     })
   }
 
-  protected def sendInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(buildInviteMessage(name))
+  override protected def sendGroupInvite(name: String): Unit = {
+    ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GROUP_INVITE))
   }
-  protected def buildInviteMessage(name: String): Packet = {
+  override def sendGuildInvite(name: String): Unit = {
+    ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GUILD_INVITE))
+  }
+  override def sendGuildKick(name: String): Unit = {
+    ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GUILD_REMOVE))
+  }
+  override protected def buildSingleStringPacket(name: String, opcode: Int): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
     byteBuf.writeBytes(name.toLowerCase.getBytes("UTF-8"))
     byteBuf.writeByte(0)
-    Packet(CMSG_GROUP_INVITE, byteBuf)
+    Packet(opcode, byteBuf)
   }
   override def groupDisband(): Unit = {
     logger.info(s"Disbanding group...")
@@ -226,7 +232,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     msg.byteBuf.skipBytes(1) // chat tag
     // invite feature:
     if (tp == ChatEvents.CHAT_MSG_WHISPER && txt.toLowerCase.contains("camp")) {
-      playersToInvite += guid
+      playersToGroupInvite += guid
       logger.info(s"PLAYER INVITATION: added $guid to the queue")
       return None
     }
