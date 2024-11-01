@@ -282,11 +282,11 @@ class GamePacketHandler(
     sendMessageToWow(ChatEvents.CHAT_MSG_GUILD, message, None)
   }
 
-protected def sendGroupInvite(name: String): Unit = {
-  val packet = buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
-  logger.info(s"SENDING GROUP INVITE TO: $name with packet: $packet")
-  ctx.get.writeAndFlush(packet)
-}
+  protected def sendGroupInvite(name: String): Unit = {
+    ctx.get.writeAndFlush(
+      buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
+    )
+  }
 
   def sendGroupKick(name: String): Unit = {
     ctx.get.writeAndFlush(
@@ -316,16 +316,16 @@ protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
   }
 
-protected def buildSingleStringPacket(
-    opcode: Int,
-    string_param: String
-): Packet = {
-  val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 20) // Adjusted size to fit additional UInt32
-  byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-  byteBuf.writeByte(0) // Null terminator for string
-  byteBuf.writeInt(0) // Additional UInt32 (0x0) as required by WotLK
-  Packet(opcode, byteBuf)
-}
+  protected def buildSingleStringPacket(
+      opcode: Int,
+      string_param: String
+  ): Packet = {
+    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
+    byteBuf.writeBytes(string_param.getBytes("UTF-8"))
+    byteBuf.writeByte(0)
+    Packet(opcode, byteBuf)
+  }
+
   def groupDisband(): Unit = {
     logger.info(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
