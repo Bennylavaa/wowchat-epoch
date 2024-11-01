@@ -61,44 +61,46 @@ object CommandHandler extends StrictLogging {
             fromChannel.sendMessage(NOT_ONLINE).queue()
             return true
           })(_.handleGmotd())
-        case "ginvite" =>
-		logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
-          Global.game.fold({
-            fromChannel.sendMessage(NOT_ONLINE).queue()
-            return true
-          })(game => {
-            protectedCommand("ginvite", () => {
-              arguments match {
-                case Some(name) => {
-				  logger.info(s"Inviting user: $name")
-                  game.sendGuildInvite(name.toLowerCase)
-                  Some(s"Invited '${name}' to the guild")
-                }
-                case None => {
-                  Some("no name provided!")
-                }
-              }
-            })
-          })
-        case "gkick" =>
-		logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
-          Global.game.fold({
-            fromChannel.sendMessage(NOT_ONLINE).queue()
-            return true
-          })(game => {
-            protectedCommand("gkick", () => {
-              arguments match {
-                case Some(name) => {
-				  logger.info(s"Kicking user: $name")
-                  game.sendGuildKick(name.toLowerCase)
-                  Some(s"Kicked '${name}' from the guild")
-                }
-                case None => {
-                  Some("no name provided!")
-                }
-              }
-            })
-          })
+    case "ginvite" =>
+	    logger.info(s"Received command 'ginvite' in channel: ${fromChannel.getId()}")
+	    Global.game.fold({
+		    fromChannel.sendMessage(NOT_ONLINE).queue()
+		    return true
+	    })(game => {
+		    protectedCommand("ginvite", () => {
+			    arguments match {
+				    case Some(name) => {
+					    val executorName = fromUser.getName // Assuming fromUser represents the command executor
+					    logger.info(s"Inviting user: $name")
+					    game.sendGuildInvite(name.toLowerCase)
+					    Some(s"$executorName has invited '${name}' to the guild") // Include executor's name
+				    }
+				    case None => {
+					    Some("no name provided!")
+				    }
+			    }
+		    })
+	    })
+    case "gkick" =>
+	    logger.info(s"Received command 'gkick' in channel: ${fromChannel.getId()}")
+	    Global.game.fold({
+		    fromChannel.sendMessage(NOT_ONLINE).queue()
+		    return true
+	    })(game => {
+		    protectedCommand("gkick", () => {
+			    arguments match {
+				    case Some(name) => {
+					    val executorName = fromUser.getName // Assuming fromUser represents the command executor
+					    logger.info(s"Kicking user: $name")
+					    game.sendGuildKick(name.toLowerCase)
+					    Some(s"$executorName has kicked '${name}' from the guild") // Include executor's name
+				    }
+				    case None => {
+					    Some("no name provided!")
+				    }
+			    }
+		    })
+	    })
         case "help" =>
           Global.game.fold({
             fromChannel.sendMessage(NOT_ONLINE).queue()
