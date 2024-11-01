@@ -316,19 +316,28 @@ protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
   }
 
-  protected def buildSingleStringPacket(
-      opcode: Int,
-      string_param: String
-  ): Packet = {
-    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 20) // Adjusted size to fit additional UInt32
-    byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-    byteBuf.writeByte(0) // Null terminator for the string
-    byteBuf.writeByte(0) // Null terminator for the string
-    byteBuf.writeByte(0) // Null terminator for the string
-    byteBuf.writeByte(0) // Null terminator for the string
-    byteBuf.writeByte(0) // Null terminator for the string
-    Packet(opcode, byteBuf)
-  }
+protected def buildSingleStringPacket(
+    opcode: Int,
+    string_param: String
+): Packet = {
+  val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 20) // Adjusted size to fit additional UInt32
+  byteBuf.writeBytes(string_param.getBytes("UTF-8"))
+  byteBuf.writeByte(0) // Null terminator for the string
+  byteBuf.writeByte(0) // Null terminator for the string
+  byteBuf.writeByte(0) // Null terminator for the string
+  byteBuf.writeByte(0) // Null terminator for the string
+  byteBuf.writeByte(0) // Null terminator for the string
+
+  // Log opcode and byteBuf contents for debugging
+  val byteArray = new Array[Byte](byteBuf.readableBytes())
+  byteBuf.getBytes(0, byteArray) // Read the buffer contents into the array
+  
+  ctx.fold(
+    logger.info(s"Opcode: $opcode, ByteBuf contents (raw array): ${byteArray.mkString(", ")}")
+  )(_ => ()) // Do nothing with the `ctx` if it's defined
+
+  Packet(opcode, byteBuf)
+}
 
   def groupDisband(): Unit = {
     logger.debug(s"Disbanding group...")
