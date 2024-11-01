@@ -125,7 +125,7 @@ class GamePacketHandlerWotLK(
   }
 
   // Vanilla does not have a keep alive packet
-  protected def runKeepAliveExecutor: Unit = {}
+  override protected def runKeepAliveExecutor: Unit = {}
 
   private def runPingExecutor: Unit = {
     executorService.scheduleWithFixedDelay(
@@ -196,11 +196,11 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def updateGuildiesOnline: Unit = {
+  override protected def updateGuildiesOnline: Unit = {
     Global.discord.changeGuildStatus(getGuildiesOnlineMessage(true))
   }
 
-  protected def queryGuildName: Unit = {
+  override protected def queryGuildName: Unit = {
     val out = PooledByteBufAllocator.DEFAULT.buffer(4, 4)
     out.writeIntLE(guildGuid.toInt)
     ctx.get.writeAndFlush(Packet(CMSG_GUILD_QUERY, out))
@@ -211,7 +211,7 @@ class GamePacketHandlerWotLK(
     ctx.get.writeAndFlush(buildGuildRosterPacket)
   }
 
-  protected def buildGuildRosterPacket: Packet = {
+  override protected def buildGuildRosterPacket: Packet = {
     Packet(CMSG_GUILD_ROSTER)
   }
 
@@ -243,7 +243,7 @@ class GamePacketHandlerWotLK(
     )
   }
 
-  protected def buildChatMessage(
+  override protected def buildChatMessage(
       tp: Byte,
       utf8MessageBytes: Array[Byte],
       utf8TargetBytes: Option[Array[Byte]]
@@ -264,7 +264,7 @@ class GamePacketHandlerWotLK(
     sendMessageToWow(ChatEvents.CHAT_MSG_GUILD, message, None)
   }
 
-  protected def sendGroupInvite(name: String): Unit = {
+  override protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(
       buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
     )
@@ -298,7 +298,7 @@ class GamePacketHandlerWotLK(
     ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
   }
 
-  protected def buildSingleStringPacket(
+  override protected def buildSingleStringPacket(
       opcode: Int,
       string_param: String
   ): Packet = {
@@ -354,7 +354,7 @@ class GamePacketHandlerWotLK(
     })
   }
 
-  protected def buildWhoMessage(name: String): ByteBuf = {
+  override protected def buildWhoMessage(name: String): ByteBuf = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(64, 64)
     byteBuf.writeIntLE(0) // level min
     byteBuf.writeIntLE(100) // level max
@@ -383,7 +383,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def channelParse(msg: Packet): Unit = {
+  override protected def channelParse(msg: Packet): Unit = {
     msg.id match {
       case SMSG_AUTH_CHALLENGE       => handle_SMSG_AUTH_CHALLENGE(msg)
       case SMSG_AUTH_RESPONSE        => handle_SMSG_AUTH_RESPONSE(msg)
@@ -475,7 +475,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def parseAuthResponse(msg: Packet): Byte = {
+  override protected def parseAuthResponse(msg: Packet): Byte = {
     msg.byteBuf.readByte
   }
 
@@ -564,7 +564,7 @@ class GamePacketHandlerWotLK(
     Source.fromBytes(ret.result.toArray, "UTF-8").mkString
   }
 
-  protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
+  override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
     logger.error(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
 
     val isRaid = msg.byteBuf.readBoolean() // false: group, true: raid
@@ -647,7 +647,7 @@ class GamePacketHandlerWotLK(
     None
   }
 
-  protected def writePlayerLogin(out: ByteBuf): Unit = {
+  override protected def writePlayerLogin(out: ByteBuf): Unit = {
     out.writeLongLE(selfCharacterId.get)
   }
 
@@ -689,7 +689,7 @@ class GamePacketHandlerWotLK(
       }
   }
 
-  protected def writeJoinChannel(
+  override protected def writeJoinChannel(
       out: ByteBuf,
       id: Int,
       utf8ChannelBytes: Array[Byte]
@@ -703,7 +703,7 @@ class GamePacketHandlerWotLK(
     guildInfo = handleGuildQuery(msg)
   }
 
-  protected def handleGuildQuery(msg: Packet): GuildInfo = {
+  override protected def handleGuildQuery(msg: Packet): GuildInfo = {
     msg.byteBuf.skipBytes(4)
     val name = msg.readString
 
@@ -725,7 +725,7 @@ class GamePacketHandlerWotLK(
     handleGuildEvent(event, messages)
   }
 
-  protected def handleGuildEvent(event: Byte, messages: Seq[String]): Unit = {
+  override protected def handleGuildEvent(event: Byte, messages: Seq[String]): Unit = {
     // ignore empty messages
     if (messages.forall(_.trim.isEmpty)) {
       return
@@ -788,7 +788,7 @@ class GamePacketHandlerWotLK(
     updateGuildiesOnline
   }
 
-  protected def parseGuildRoster(msg: Packet): Map[Long, GuildMember] = {
+  override protected def parseGuildRoster(msg: Packet): Map[Long, GuildMember] = {
     val count = msg.byteBuf.readIntLE
     guildMotd = Some(msg.readString)
     val ginfo = msg.readString
@@ -823,14 +823,14 @@ class GamePacketHandlerWotLK(
       .toMap
   }
 
-  protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
+  override protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
     logger.debug(
       s"RECV CHAT: ${ByteUtils.toHexString(msg.byteBuf, true, true)}"
     )
     parseChatMessage(msg).foreach(sendChatMessage)
   }
 
-  protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
+  override protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
     val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
     logger.debug(s"RECV PARTY COMMAND RESULT: ${reply}")
 
@@ -840,7 +840,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def sendChatMessage(chatMessage: ChatMessage): Unit = {
+  override protected def sendChatMessage(chatMessage: ChatMessage): Unit = {
     if (chatMessage.guid == 0) {
       Global.discord.sendMessageFromWow(
         None,
@@ -869,7 +869,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
+  override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
     val tp = msg.byteBuf.readByte
 
     val lang = msg.byteBuf.readIntLE
@@ -927,7 +927,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
+  override protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
     // This is a guild event so guid MUST be in roster already
     // (unless some weird edge case -> achievement came before roster update)
     guildRoster.get(guid).foreach(player => {
@@ -988,7 +988,7 @@ class GamePacketHandlerWotLK(
     logger.info(s"Notification: ${parseNotification(msg)}")
   }
 
-  protected def parseNotification(msg: Packet): String = {
+  override protected def parseNotification(msg: Packet): String = {
     msg.readString
   }
 
@@ -1057,7 +1057,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def parseWhoResponse(msg: Packet): Seq[WhoResponse] = {
+  override protected def parseWhoResponse(msg: Packet): Seq[WhoResponse] = {
     val displayCount = msg.byteBuf.readIntLE
     val matchCount = msg.byteBuf.readIntLE
 
@@ -1109,7 +1109,7 @@ class GamePacketHandlerWotLK(
     playerRoster.remove(guid)
   }
 
-  protected def parseInvalidatePlayer(msg: Packet): Long = {
+  override protected def parseInvalidatePlayer(msg: Packet): Long = {
     msg.byteBuf.readLongLE
   }
 
@@ -1137,7 +1137,7 @@ class GamePacketHandlerWotLK(
     }
   }
 
-  protected def initializeWardenHandler: WardenHandler = {
+  override protected def initializeWardenHandler: WardenHandler = {
     new WardenHandler(sessionKey)
   }
 }
