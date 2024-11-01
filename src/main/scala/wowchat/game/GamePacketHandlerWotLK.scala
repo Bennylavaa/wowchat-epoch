@@ -147,6 +147,55 @@ protected def buildSingleStringPacketWRATH(
     Packet(opcode, byteBuf)
 }
 
+override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
+    logger.error(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
+
+    val groupType = msg.byteBuf.readByte() // u8 group_type
+    val groupId = msg.byteBuf.readByte()   // u8 group_id
+    val flags = msg.byteBuf.readByte()     // u8 flags
+    val roles = msg.byteBuf.readByte()     // u8 roles
+    val groupGuid = msg.byteBuf.readLongLE() // Guid group (64-bit)
+    val counter = msg.byteBuf.readIntLE()  // u32 counter
+    val memberCount = msg.byteBuf.readIntLE() // u32 amount_of_members
+
+    for (i <- 1 to memberCount) {
+      val name = readString(msg.byteBuf)
+      msg.byteBuf.skipBytes(8) // guid
+      val isOnline = msg.byteBuf.readBoolean()
+      msg.byteBuf.skipBytes(1) // flags
+
+      val cachedOnlineState = groupMembers.get(name)
+      if (Some(isOnline) != cachedOnlineState) {
+        cachedOnlineState match {
+          case Some(true) => {
+            logger.error(
+              s"Person went offline! doing the thing ($name -> $isOnline)"
+            )
+            groupMembers(name) = isOnline
+            sendResetInstances()
+            // sendGroupKick(name)
+          }
+          case _ => {
+            groupMembers(name) = isOnline
+          }
+        }
+      }
+      logger.info(s"Member #$i: $name - is online: $isOnline")
+    }
+
+    val leaderGuid = msg.byteBuf.readLongLE() // Guid leader
+
+    if (flags != 0) { // Optional block: group_not_empty
+        val lootSetting = msg.byteBuf.readByte() // GroupLootSetting (u8)
+        val masterLootGuid = msg.byteBuf.readLongLE() // Guid master_loot
+        val lootThreshold = msg.byteBuf.readByte() // ItemQuality (u8)
+        val dungeonDifficulty = msg.byteBuf.readByte() // DungeonDifficulty (u8)
+        val raidDifficulty = msg.byteBuf.readByte() // RaidDifficulty (u8)
+        val heroic = msg.byteBuf.readBoolean() // Bool heroic
+    }
+}
+
+
 override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   // Read the type of chat message
   val tp = msg.byteBuf.readByte
