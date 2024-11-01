@@ -284,7 +284,7 @@ class GamePacketHandler(
 
   protected def sendGroupInvite(name: String): Unit = {
     ctx.get.writeAndFlush(
-      buildInviteMessage(CMSG_GROUP_INVITE, name.toLowerCase())
+      buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
     )
   }
 
@@ -325,7 +325,7 @@ class GamePacketHandler(
     byteBuf.writeByte(0)
     Packet(opcode, byteBuf)
   }
-      
+
   def groupDisband(): Unit = {
     logger.debug(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
