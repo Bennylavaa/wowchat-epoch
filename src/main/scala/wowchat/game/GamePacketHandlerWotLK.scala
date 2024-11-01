@@ -159,20 +159,20 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     })
   }
 
-  override protected def sendInvite(name: String): Unit = {
+  protected def sendInvite(name: String): Unit = {
     ctx.get.writeAndFlush(buildInviteMessage(name))
   }
-  override protected def buildInviteMessage(name: String): Packet = {
+  protected def buildInviteMessage(name: String): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
     byteBuf.writeBytes(name.toLowerCase.getBytes("UTF-8"))
     byteBuf.writeByte(0)
     Packet(CMSG_GROUP_INVITE, byteBuf)
   }
-  def groupDisband(): Unit = {
+  override def groupDisband(): Unit = {
     logger.info(s"Disbanding group...")
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
   }
-  def groupConvertToRaid(): Unit = {
+  override def groupConvertToRaid(): Unit = {
     ctx.get.writeAndFlush(Packet(CMSG_GROUP_RAID_CONVERT))
   }
 
