@@ -2,28 +2,11 @@ package wowchat.game
 
 import java.nio.charset.Charset
 import java.security.MessageDigest
-import java.util.concurrent.{Executors, TimeUnit}
 
 import wowchat.common._
 import io.netty.buffer.{ByteBuf, PooledByteBufAllocator}
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashSet
-import scala.collection.mutable.ListBuffer
-import scala.io.Source
-import scala.util.control.Breaks.{breakable, break}
+
 import scala.util.Random
-
-import wowchat.game.warden.{WardenHandler, WardenPackets}
-import com.typesafe.scalalogging.StrictLogging
-
-import io.netty.channel.{
-  ChannelFuture,
-  ChannelHandlerContext,
-  ChannelInboundHandlerAdapter
-}
-import wowchat.commands.{CommandHandler, WhoResponse}
-
 
 class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[Byte], gameEventCallback: CommonConnectionCallback)
   extends GamePacketHandlerTBC(realmId, realmName, sessionKey, gameEventCallback) with GamePacketsWotLK {
@@ -44,128 +27,6 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     0x09, 0xFA, 0x13, 0xB8, 0x42, 0x01, 0xDD, 0xC4, 0x31, 0x6E, 0x31, 0x0B, 0xCA, 0x5F, 0x7B, 0x7B,
     0x1C, 0x3E, 0x9E, 0xE1, 0x93, 0xC8, 0x8D
   ).map(_.toByte)
-
-  override protected val playerRosterCached = LRUMap.empty[Long, String]
-  override protected val playersToGroupInvite: HashSet[Long] = HashSet[Long]()
-  override protected val groupMembers = mutable.Map.empty[String, Boolean]
-
-  private val queuedChatMessages =
-    new mutable.HashMap[Long, mutable.ListBuffer[ChatMessage]]
-
-  private def runGroupInviteExecutor: Unit = {
-    executorService.scheduleWithFixedDelay(
-      () => {
-        val guidsToRemove: HashSet[Long] = HashSet[Long]()
-        playersToGroupInvite.foreach { guid =>
-          logger.info(s"Player group invitation: handling ${guid}...")
-          var player_name = playerRosterCached.get(guid)
-          player_name match {
-            case Some(name) =>
-              logger.info(s"Inviting player '${name}'")
-              groupConvertToRaid
-              sendGroupInvite(name)
-              guidsToRemove += guid
-            case None =>
-              logger.info(
-                s"Player invitation:'$guid' not cached, sending name query..."
-              )
-              sendNameQuery(guid)
-          }
-        }
-        guidsToRemove.foreach(playersToGroupInvite.remove)
-      },
-      3,
-      3,
-      TimeUnit.SECONDS
-    )
-  }
-
-  override protected def sendGroupInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase())
-    )
-  }
-  def sendGroupKick(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_KICK, name.toLowerCase())
-    )
-  }
-  def sendGroupKickUUID(name_uuid: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GROUP_KICK_UUID, name_uuid)
-    )
-  }
-  def sendGuildInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GUILD_INVITE, name.toLowerCase())
-    )
-  }
-  def sendGuildKick(name: String): Unit = {
-    ctx.get.writeAndFlush(
-      buildSingleStringPacket(CMSG_GUILD_REMOVE, name.toLowerCase())
-    )
-  }
-  def sendResetInstances(): Unit = {
-    ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
-  }
-  override protected def buildSingleStringPacket(
-      opcode: Int,
-      string_param: String
-  ): Packet = {
-    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
-    byteBuf.writeBytes(string_param.getBytes("UTF-8"))
-    byteBuf.writeByte(0)
-    Packet(opcode, byteBuf)
-  }
-  def groupDisband(): Unit = {
-    logger.info(s"Disbanding group...")
-    ctx.get.writeAndFlush(Packet(CMSG_GROUP_DISBAND))
-  }
-  def groupConvertToRaid(): Unit = {
-    ctx.get.writeAndFlush(Packet(CMSG_GROUP_RAID_CONVERT))
-  }
-  def updateGroupLootMethod(mode: Int, masterGUID: Long = 0, threshold: Int = 2) = {
-    val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(16, 16)
-    byteBuf.writeIntLE(mode)
-    byteBuf.writeLongLE(masterGUID)
-    byteBuf.writeIntLE(threshold)
-    ctx.get.writeAndFlush(Packet(CMSG_LOOT_METHOD, byteBuf))
-  }
-  
-  override protected def channelParse(msg: Packet): Unit = {
-    msg.id match {
-      case SMSG_AUTH_CHALLENGE       => handle_SMSG_AUTH_CHALLENGE(msg)
-      case SMSG_AUTH_RESPONSE        => handle_SMSG_AUTH_RESPONSE(msg)
-      case SMSG_NAME_QUERY           => handle_SMSG_NAME_QUERY(msg)
-      case SMSG_CHAR_ENUM            => handle_SMSG_CHAR_ENUM(msg)
-      case SMSG_LOGIN_VERIFY_WORLD   => handle_SMSG_LOGIN_VERIFY_WORLD(msg)
-      case SMSG_GUILD_QUERY          => handle_SMSG_GUILD_QUERY(msg)
-      case SMSG_GUILD_EVENT          => handle_SMSG_GUILD_EVENT(msg)
-      case SMSG_GUILD_ROSTER         => handle_SMSG_GUILD_ROSTER(msg)
-      case SMSG_MESSAGECHAT          => handle_SMSG_MESSAGECHAT(msg)
-      case SMSG_CHANNEL_NOTIFY       => handle_SMSG_CHANNEL_NOTIFY(msg)
-      case SMSG_NOTIFICATION         => handle_SMSG_NOTIFICATION(msg)
-      case SMSG_WHO                  => handle_SMSG_WHO(msg)
-      case SMSG_SERVER_MESSAGE       => handle_SMSG_SERVER_MESSAGE(msg)
-      case SMSG_INVALIDATE_PLAYER    => handle_SMSG_INVALIDATE_PLAYER(msg)
-      case SMSG_PARTY_COMMAND_RESULT => handle_SMSG_PARTY_COMMAND_RESULT(msg)
-      case SMSG_GROUP_LIST           => handle_SMSG_GROUP_LIST(msg)
-
-      case SMSG_WARDEN_DATA => handle_SMSG_WARDEN_DATA(msg)
-
-      case unhandled => logger.info(s"Unhandled message ID: $unhandled")
-    }
-  }
-  
-  private def handle_SMSG_AUTH_CHALLENGE(msg: Packet): Unit = {
-    val authChallengeMessage = parseAuthChallenge(msg)
-
-    ctx.get.channel.attr(CRYPT).get.init(authChallengeMessage.sessionKey)
-
-    ctx.get.writeAndFlush(
-      Packet(CMSG_AUTH_CHALLENGE, authChallengeMessage.byteBuf)
-    )
-  }
 
   override protected def parseAuthChallenge(msg: Packet): AuthChallengeMessage = {
     val account = Global.config.wow.account
@@ -198,46 +59,6 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
 
     AuthChallengeMessage(sessionKey, out)
   }
-  
-  private def handle_SMSG_AUTH_RESPONSE(msg: Packet): Unit = {
-    val code = parseAuthResponse(msg)
-    if (code == AuthResponseCodes.AUTH_OK) {
-      logger.info("Successfully logged in!")
-      sendCharEnum
-    } else if (code == AuthResponseCodes.AUTH_WAIT_QUEUE) {
-      if (msg.byteBuf.readableBytes() >= 14) {
-        msg.byteBuf.skipBytes(10)
-      }
-      val position = msg.byteBuf.readIntLE
-      logger.info(s"Queue enabled. Position: $position")
-    } else {
-      logger.error(AuthResponseCodes.getMessage(code))
-      ctx.foreach(_.close)
-      gameEventCallback.error
-    }
-  }
-
-  private def handle_SMSG_NAME_QUERY(msg: Packet): Unit = {
-    val nameQueryMessage = parseNameQuery(msg)
-    playerRosterCached += nameQueryMessage.guid -> nameQueryMessage.name
-
-    queuedChatMessages
-      .remove(nameQueryMessage.guid)
-      .foreach(messages => {
-        messages.foreach(message => {
-          Global.discord.sendMessageFromWow(
-            Some(nameQueryMessage.name),
-            message.message,
-            message.tp,
-            message.channel
-          )
-        })
-        playerRoster += nameQueryMessage.guid -> Player(
-          nameQueryMessage.name,
-          nameQueryMessage.charClass
-        )
-      })
-  }
 
   override protected def parseNameQuery(msg: Packet): NameQueryMessage = {
     val guid = unpackGuid(msg.byteBuf)
@@ -253,98 +74,11 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
       val charClass = msg.byteBuf.readByte
       (name, charClass)
     } else {
-      logger.info(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
+      logger.error(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
       ("UNKNOWN", 0xFF.toByte)
     }
 
     NameQueryMessage(guid, name, charClass)
-  }
-
-  private def handle_SMSG_CHAR_ENUM(msg: Packet): Unit = {
-    if (receivedCharEnum) {
-      if (inWorld) {
-        // Do not parse char enum again if we've already joined the world.
-        return
-      } else {
-        logger.info(
-          "Received character enum more than once. Trying to join the world again..."
-        )
-      }
-    }
-    receivedCharEnum = true
-    parseCharEnum(msg).fold({
-      logger.error(s"Character ${Global.config.wow.character} not found!")
-    })(character => {
-      logger.info(s"Logging in with character ${character.name}")
-      selfCharacterId = Some(character.guid)
-      languageId = Races.getLanguage(character.race)
-      guildGuid = character.guildGuid
-
-      val out =
-        PooledByteBufAllocator.DEFAULT.buffer(16, 16) // increase to 16 for MoP
-      writePlayerLogin(out)
-      ctx.get.writeAndFlush(Packet(CMSG_PLAYER_LOGIN, out))
-    })
-  }
-
-  def readString(buf: ByteBuf): String = {
-    val ret = ArrayBuffer.newBuilder[Byte]
-    breakable {
-      while (buf.readableBytes > 0) {
-        val value = buf.readByte
-        if (value == 0) {
-          break
-        }
-        ret += value
-      }
-    }
-
-    Source.fromBytes(ret.result.toArray, "UTF-8").mkString
-  }
-
-  override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
-    logger.info(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
-
-    val isRaid = msg.byteBuf.readBoolean() // false: group, true: raid
-    if (!isRaid) { groupConvertToRaid(); return }
-
-    msg.byteBuf.skipBytes(1) // flags
-    val memberCount = msg.byteBuf.readIntLE()
-
-    for (i <- 1 to memberCount) {
-      val name = readString(msg.byteBuf)
-      msg.byteBuf.skipBytes(8) // guid
-      val isOnline = msg.byteBuf.readBoolean()
-      msg.byteBuf.skipBytes(1) // flags
-
-      val cachedOnlineState = groupMembers.get(name)
-      if (Some(isOnline) != cachedOnlineState) {
-        cachedOnlineState match {
-          case Some(true) => {
-            logger.info(
-              s"Person went offline! doing the thing ($name -> $isOnline)"
-            )
-            groupMembers(name) = isOnline
-            sendResetInstances()
-            // sendGroupKick(name)
-          }
-          case _ => {
-            groupMembers(name) = isOnline
-          }
-        }
-      }
-      logger.info(s"Member #$i: $name - is online: $isOnline")
-    }
-
-    val leaderGUID = msg.byteBuf.readLongLE()
-    val groupLootSetting =
-      msg.byteBuf
-        .readByte() // 0: FFA, 1: RR, 2: ML, 3: Group loot, 4: Need before greed
-    val masterLooterGUID = msg.byteBuf.readLongLE()
-    val lootQuality = msg.byteBuf.readByte() // 2: uncommon, 3: rare, 4: epic
-    msg.byteBuf.skipBytes(1) // null-termination
-
-    if (groupLootSetting != 0) {updateGroupLootMethod(0); return}
   }
 
   override protected def parseCharEnum(msg: Packet): Option[CharEnumMessage] = {
@@ -385,473 +119,52 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     None
   }
 
-  protected def writePlayerLogin(out: ByteBuf): Unit = {
-    out.writeLongLE(selfCharacterId.get)
-  }
-
-  private def handle_SMSG_LOGIN_VERIFY_WORLD(msg: Packet): Unit = {
-    // for some reason some servers send this packet more than once.
-    if (inWorld) {
-      return
-    }
-
-    logger.info("Successfully joined the world!")
-    inWorld = true
-    Global.discord.changeRealmStatus(realmName)
-    gameEventCallback.connected
-    runKeepAliveExecutor
-    runGuildRosterExecutor
-    runGroupInviteExecutor
-    if (guildGuid != 0) {
-      queryGuildName
-      updateGuildRoster
-    }
-
-    // join channels
-    Global.config.channels
-      .flatMap(channelConfig => {
-        channelConfig.wow.channel.fold[Option[(Int, String)]](None)(
-          channelName => {
-            Some(
-              channelConfig.wow.id
-                .getOrElse(ChatChannelIds.getId(channelName)) -> channelName
-            )
-          }
-        )
-      })
-      .foreach { case (id, name) =>
-        logger.info(s"Joining channel $name")
-        val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(50, 200)
-        writeJoinChannel(byteBuf, id, name.getBytes("UTF-8"))
-        ctx.get.writeAndFlush(Packet(CMSG_JOIN_CHANNEL, byteBuf))
-      }
-  }
-
-  protected def writeJoinChannel(
-      out: ByteBuf,
-      id: Int,
-      utf8ChannelBytes: Array[Byte]
-  ): Unit = {
-    out.writeBytes(utf8ChannelBytes)
-    out.writeByte(0)
-    out.writeByte(0)
-  }
-
-  private def handle_SMSG_GUILD_QUERY(msg: Packet): Unit = {
-    guildInfo = handleGuildQuery(msg)
-  }
-
-  protected def handleGuildQuery(msg: Packet): GuildInfo = {
-    msg.byteBuf.skipBytes(4)
-    val name = msg.readString
-
-    val ranks = (0 until 10)
-      .map(_ -> msg.readString)
-      .filter { case (_, name) =>
-        name.nonEmpty
-      }
-      .toMap
-
-    GuildInfo(name, ranks)
-  }
-
-  private def handle_SMSG_GUILD_EVENT(msg: Packet): Unit = {
-    val event = msg.byteBuf.readByte
-    val numStrings = msg.byteBuf.readByte
-    val messages = (0 until numStrings).map(i => msg.readString)
-
-    handleGuildEvent(event, messages)
-  }
-
-  protected def handleGuildEvent(event: Byte, messages: Seq[String]): Unit = {
-    // ignore empty messages
-    if (messages.forall(_.trim.isEmpty)) {
-      return
-    }
-
-    // ignore events from self
-    if (
-      event != GuildEvents.GE_MOTD && Global.config.wow.character
-        .equalsIgnoreCase(messages.head)
-    ) {
-      return
-    }
-
-    val eventConfigKey = event match {
-      case GuildEvents.GE_PROMOTED   => "promoted"
-      case GuildEvents.GE_DEMOTED    => "demoted"
-      case GuildEvents.GE_MOTD       => "motd"
-      case GuildEvents.GE_JOINED     => "joined"
-      case GuildEvents.GE_LEFT       => "left"
-      case GuildEvents.GE_REMOVED    => "removed"
-      case GuildEvents.GE_SIGNED_ON  => "online"
-      case GuildEvents.GE_SIGNED_OFF => "offline"
-      case _                         => return
-    }
-
-    val guildNotificationConfig =
-      Global.config.guildConfig.notificationConfigs(eventConfigKey)
-
-    if (guildNotificationConfig.enabled) {
-      val formatted = event match {
-        case GuildEvents.GE_PROMOTED | GuildEvents.GE_DEMOTED =>
-          guildNotificationConfig.format
-            .replace("%time", Global.getTime)
-            .replace("%user", messages.head)
-            .replace("%message", messages.head)
-            .replace("%target", messages(1))
-            .replace("%rank", messages(2))
-        case GuildEvents.GE_REMOVED =>
-          guildNotificationConfig.format
-            .replace("%time", Global.getTime)
-            .replace("%user", messages(1))
-            .replace("%message", messages(1))
-            .replace("%target", messages.head)
-        case _ =>
-          guildNotificationConfig.format
-            .replace("%time", Global.getTime)
-            .replace("%user", messages.head)
-            .replace("%message", messages.head)
-      }
-
-      Global.discord.sendGuildNotification(eventConfigKey, formatted)
-    }
-
-    updateGuildRoster
-  }
-
-  private def handle_SMSG_GUILD_ROSTER(msg: Packet): Unit = {
-    guildRoster.clear
-    guildRoster ++= parseGuildRoster(msg)
-    updateGuildiesOnline
-  }
-
-  protected def parseGuildRoster(msg: Packet): Map[Long, GuildMember] = {
-    val count = msg.byteBuf.readIntLE
-    guildMotd = Some(msg.readString)
-    val ginfo = msg.readString
-    val rankscount = msg.byteBuf.readIntLE
-    (0 until rankscount).foreach(i => msg.byteBuf.skipBytes(4))
-    (0 until count)
-      .map(i => {
-        val guid = msg.byteBuf.readLongLE
-        val isOnline = msg.byteBuf.readBoolean
-        val name = msg.readString
-        msg.byteBuf.skipBytes(4) // guild rank
-        val level = msg.byteBuf.readByte
-        val charClass = msg.byteBuf.readByte
-        val zoneId = msg.byteBuf.readIntLE
-        val lastLogoff = if (!isOnline) {
-          msg.byteBuf.readFloatLE
-        } else {
-          0
-        }
-        msg.skipString
-        msg.skipString
-
-        guid -> GuildMember(
-          name,
-          isOnline,
-          charClass,
-          level,
-          zoneId,
-          lastLogoff
-        )
-      })
-      .toMap
-  }
-
-  protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
-    logger.debug(
-      s"RECV CHAT: ${ByteUtils.toHexString(msg.byteBuf, true, true)}"
-    )
-    parseChatMessage(msg).foreach(sendChatMessage)
-  }
-
-  protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
-    val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
-    logger.info(s"RECV PARTY COMMAND RESULT: ${reply}")
-
-    // We get this reply when we don't have rights to invite others
-    if (reply == "00 00 00 00 00 06 00 00 00") {
-      groupDisband()
-    }
-  }
-
-  protected def sendChatMessage(chatMessage: ChatMessage): Unit = {
-    if (chatMessage.guid == 0) {
-      Global.discord.sendMessageFromWow(
-        None,
-        chatMessage.message,
-        chatMessage.tp,
-        None
-      )
-    } else {
-      playerRoster
-        .get(chatMessage.guid)
-        .fold({
-          queuedChatMessages
-            .get(chatMessage.guid)
-            .fold({
-              queuedChatMessages += chatMessage.guid -> ListBuffer(chatMessage)
-              sendNameQuery(chatMessage.guid)
-            })(_ += chatMessage)
-        })(name => {
-          Global.discord.sendMessageFromWow(
-            Some(name.name),
-            chatMessage.message,
-            chatMessage.tp,
-            chatMessage.channel
-          )
-        })
-    }
-  }
-
   override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
-  val tp = msg.byteBuf.readByte
-  
-  val lang = msg.byteBuf.readIntLE
-  // ignore addon messages
-  if (lang == -1) {
-	  return None
-  }
-  
-  // ignore messages from itself, unless it is a system message.
-  val guid = msg.byteBuf.readLongLE
-  if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
-	  return None
-  }
-  
-  msg.byteBuf.skipBytes(4)
-  
-  if (msg.id == SMSG_GM_MESSAGECHAT) {
-	  msg.byteBuf.skipBytes(4)
-	  msg.skipString
-  }
-  
-  val channelName = if (tp == ChatEvents.CHAT_MSG_CHANNEL) {
-	  Some(msg.readString)
-  } else {
-	  None
-  }
-  
-  // ignore if from an unhandled channel - unless it is a guild achievement message
-  if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
-	  return None
-  }
-  
-  msg.byteBuf.skipBytes(8) // skip guid again
-  
-  val txtLen = msg.byteBuf.readIntLE
-  val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
-  msg.byteBuf.skipBytes(1) // null terminator
-  msg.byteBuf.skipBytes(1) // chat tag
-  
-  // Invite feature:
-  if (
-	  tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))
-  ) {
-	  playersToGroupInvite += guid
-	  logger.info(s"PLAYER INVITATION: added $guid to the queue")
-  }
-  
-  if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
-	  handleAchievementEvent(guid, msg.byteBuf.readIntLE)
-	  None
-  } else {
-	  Some(ChatMessage(guid, tp, txt, channelName))
-  }
-  }
+    val tp = msg.byteBuf.readByte
 
-  private def handle_SMSG_CHANNEL_NOTIFY(msg: Packet): Unit = {
-    val id = msg.byteBuf.readByte
-    val channelName = msg.readString
-
-    id match {
-      case ChatNotify.CHAT_YOU_JOINED_NOTICE =>
-        logger.info(s"Joined Channel: [$channelName]")
-      case ChatNotify.CHAT_WRONG_PASSWORD_NOTICE =>
-        logger.error(s"Wrong password for $channelName.")
-      case ChatNotify.CHAT_MUTED_NOTICE =>
-        logger.error(s"[$channelName] You do not have permission to speak.")
-      case ChatNotify.CHAT_BANNED_NOTICE =>
-        logger.error(s"[$channelName] You are banned from that channel.")
-      case ChatNotify.CHAT_WRONG_FACTION_NOTICE =>
-        logger.error(s"Wrong alliance for $channelName.")
-      case ChatNotify.CHAT_INVALID_NAME_NOTICE =>
-        logger.error("Invalid channel name")
-      case ChatNotify.CHAT_THROTTLED_NOTICE =>
-        logger.error(
-          s"[$channelName] The number of messages that can be sent to this channel is limited, please wait to send another message."
-        )
-      case ChatNotify.CHAT_NOT_IN_AREA_NOTICE =>
-        logger.error(
-          s"[$channelName] You are not in the correct area for this channel."
-        )
-      case ChatNotify.CHAT_NOT_IN_LFG_NOTICE =>
-        logger.error(
-          s"[$channelName] You must be queued in looking for group before joining this channel."
-        )
-      case _ =>
-      // ignore all other chat notifications
+    val lang = msg.byteBuf.readIntLE
+    // ignore addon messages
+    if (lang == -1) {
+      return None
     }
-  }
 
-  private def handle_SMSG_NOTIFICATION(msg: Packet): Unit = {
-    logger.info(s"Notification: ${parseNotification(msg)}")
-  }
+    // ignore messages from itself, unless it is a system message.
+    val guid = msg.byteBuf.readLongLE
+    if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
+      return None
+    }
 
-  protected def parseNotification(msg: Packet): String = {
-    msg.readString
-  }
+    msg.byteBuf.skipBytes(4)
 
-  // This is actually really hard to map back to a specific request
-  // because the packet doesn't include a cookie/id/requested name if none found
-  private def handle_SMSG_WHO(msg: Packet): Unit = {
-    val displayResults = parseWhoResponse(msg)
-    // Try to find exact match
-    val exactName = CommandHandler.whoRequest.playerName.toLowerCase
-    val exactMatch = displayResults.find(_.playerName.toLowerCase == exactName)
-    val handledResponses = CommandHandler.handleWhoResponse(
-      exactMatch,
-      guildInfo,
-      guildRoster,
-      guildMember =>
-        guildMember.name.equalsIgnoreCase(CommandHandler.whoRequest.playerName)
-    )
-    if (handledResponses.isEmpty) {
-      // Exact match not found and no exact match in guild roster. Look for approximate matches.
-      if (displayResults.isEmpty) {
-        // No approximate matches found online. Try to find some in guild roster.
-        val approximateMatches = CommandHandler.handleWhoResponse(
-          exactMatch,
-          guildInfo,
-          guildRoster,
-          guildMember => guildMember.name.toLowerCase.contains(exactName)
-        )
-        if (approximateMatches.isEmpty) {
-          // No approximate matches found.
-          CommandHandler.whoRequest.messageChannel
-            .sendMessage(
-              s"No player named ${CommandHandler.whoRequest.playerName} is currently playing."
-            )
-            .queue()
-        } else {
-          // Send at most 3 approximate matches.
-          approximateMatches
-            .take(3)
-            .foreach(
-              CommandHandler.whoRequest.messageChannel.sendMessage(_).queue()
-            )
-        }
-      } else {
-        // Approximate matches found online!
-        displayResults
-          .take(3)
-          .foreach(whoResponse => {
-            CommandHandler
-              .handleWhoResponse(
-                Some(whoResponse),
-                guildInfo,
-                guildRoster,
-                guildMember =>
-                  guildMember.name
-                    .equalsIgnoreCase(CommandHandler.whoRequest.playerName)
-              )
-              .foreach(
-                CommandHandler.whoRequest.messageChannel.sendMessage(_).queue()
-              )
-          })
-      }
+    if (msg.id == SMSG_GM_MESSAGECHAT) {
+      msg.byteBuf.skipBytes(4)
+      msg.skipString
+    }
+
+    val channelName = if (tp == ChatEvents.CHAT_MSG_CHANNEL) {
+      Some(msg.readString)
     } else {
-      handledResponses.foreach(
-        CommandHandler.whoRequest.messageChannel.sendMessage(_).queue()
-      )
+      None
     }
-  }
 
-  protected def parseWhoResponse(msg: Packet): Seq[WhoResponse] = {
-    val displayCount = msg.byteBuf.readIntLE
-    val matchCount = msg.byteBuf.readIntLE
+    // ignore if from an unhandled channel - unless it is a guild achievement message
+    if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
+      return None
+    }
 
-    if (displayCount == 0) {
-      Seq.empty
+    msg.byteBuf.skipBytes(8) // skip guid again
+
+    val txtLen = msg.byteBuf.readIntLE
+    val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
+    msg.byteBuf.skipBytes(1) // null terminator
+    msg.byteBuf.skipBytes(1) // chat tag
+
+    if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
+      handleAchievementEvent(guid, msg.byteBuf.readIntLE)
+      None
     } else {
-      (0 until displayCount).map(i => {
-        val playerName = msg.readString
-        val guildName = msg.readString
-        val lvl = msg.byteBuf.readIntLE
-        val cls = Classes.valueOf(msg.byteBuf.readIntLE.toByte)
-        val race = Races.valueOf(msg.byteBuf.readIntLE.toByte)
-        val gender = if (WowChatConfig.getExpansion != WowExpansion.Vanilla) {
-          Some(Genders.valueOf(msg.byteBuf.readByte)) // tbc/wotlk only
-        } else {
-          None
-        }
-        val zone = msg.byteBuf.readIntLE
-        WhoResponse(
-          playerName,
-          guildName,
-          lvl,
-          cls,
-          race,
-          gender,
-          GameResources.AREA.getOrElse(zone, "Unknown Zone")
-        )
-      })
+      Some(ChatMessage(guid, tp, txt, channelName))
     }
-  }
-
-  private def handle_SMSG_SERVER_MESSAGE(msg: Packet): Unit = {
-    val tp = msg.byteBuf.readIntLE
-    val txt = msg.readString
-    val message = tp match {
-      case ServerMessageType.SERVER_MSG_SHUTDOWN_TIME => s"Shutdown in $txt"
-      case ServerMessageType.SERVER_MSG_RESTART_TIME  => s"Restart in $txt"
-      case ServerMessageType.SERVER_MSG_SHUTDOWN_CANCELLED =>
-        "Shutdown cancelled."
-      case ServerMessageType.SERVER_MSG_RESTART_CANCELLED =>
-        "Restart cancelled."
-      case _ => txt
-    }
-    sendChatMessage(ChatMessage(0, ChatEvents.CHAT_MSG_SYSTEM, message, None))
-  }
-
-  private def handle_SMSG_INVALIDATE_PLAYER(msg: Packet): Unit = {
-    val guid = parseInvalidatePlayer(msg)
-    playerRoster.remove(guid)
-  }
-
-  protected def parseInvalidatePlayer(msg: Packet): Long = {
-    msg.byteBuf.readLongLE
-  }
-
-  private def handle_SMSG_WARDEN_DATA(msg: Packet): Unit = {
-    if (Global.config.wow.platform == Platform.Windows) {
-      logger.error(
-        "WARDEN ON WINDOWS IS NOT SUPPORTED! BOT WILL SOON DISCONNECT! TRY TO USE PLATFORM MAC!"
-      )
-      return
-    }
-
-    if (wardenHandler.isEmpty) {
-      wardenHandler = Some(initializeWardenHandler)
-      logger.info("Warden handling initialized!")
-    }
-
-    val (id, out) = wardenHandler.get.handle(msg)
-    if (out.isDefined) {
-      ctx.get.writeAndFlush(Packet(CMSG_WARDEN_DATA, out.get))
-      // Sometimes servers do not allow char listing request until warden is successfully answered.
-      // Try requesting it here again.
-      if (id == WardenPackets.WARDEN_SMSG_HASH_REQUEST) {
-        sendCharEnum
-      }
-    }
-  }
-
-  protected def initializeWardenHandler: WardenHandler = {
-    new WardenHandler(sessionKey)
   }
 
   protected def handleAchievementEvent(guid: Long, achievementId: Int): Unit = {
