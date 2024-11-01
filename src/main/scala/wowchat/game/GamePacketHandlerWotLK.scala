@@ -2,10 +2,18 @@ package wowchat.game
 
 import java.nio.charset.Charset
 import java.security.MessageDigest
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.HashSet
 
 import wowchat.common._
 import io.netty.buffer.{ByteBuf, PooledByteBufAllocator}
+import io.netty.channel.{ChannelFuture, ChannelHandlerContext, ChannelInboundHandlerAdapter}
+import wowchat.commands.{CommandHandler, WhoResponse}
 
+import scala.io.Source
+import scala.util.control.Breaks.{breakable, break}
 import scala.util.Random
 
 class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[Byte], gameEventCallback: CommonConnectionCallback)
@@ -74,7 +82,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
       val charClass = msg.byteBuf.readByte
       (name, charClass)
     } else {
-      logger.error(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
+      logger.info(s"RECV SMSG_NAME_QUERY - Name not known for guid $guid")
       ("UNKNOWN", 0xFF.toByte)
     }
 
@@ -158,7 +166,16 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
     msg.byteBuf.skipBytes(1) // null terminator
     msg.byteBuf.skipBytes(1) // chat tag
-
+    // invite feature:
+    if (
+      tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains(
+        "camp"
+      ) || txt.toLowerCase().contains("invite"))
+    ) {
+      playersToGroupInvite += guid
+      logger.info(s"PLAYER INVITATION: added $guid to the queue")
+    }
+	
     if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
       handleAchievementEvent(guid, msg.byteBuf.readIntLE)
       None
