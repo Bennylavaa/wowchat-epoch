@@ -178,7 +178,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
 
   override protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
     val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
-    logger.debug(s"RECV PARTY COMMAND RESULT: ${reply}")
+    logger.info(s"RECV PARTY COMMAND RESULT: ${reply}")
     // We get this reply when we don't have rights to invite others
     if (reply == "00 00 00 00 00 06 00 00 00") {
       groupDisband()
@@ -227,7 +227,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     // invite feature:
     if (tp == ChatEvents.CHAT_MSG_WHISPER && txt.toLowerCase.contains("camp")) {
       playersToInvite += guid
-      logger.debug(s"PLAYER INVITATION: added $guid to the queue")
+      logger.info(s"PLAYER INVITATION: added $guid to the queue")
       return None
     }
 	
