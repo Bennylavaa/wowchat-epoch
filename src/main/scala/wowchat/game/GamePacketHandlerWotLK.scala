@@ -286,21 +286,6 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   } else {
     None
   }
-  
-  // Check for whispers containing 'camp' or 'invite'
-  if (tp == 7 && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
-    logger.info(s"DEBUG: Found whisper message containing 'camp' or 'invite'")
-    playersToGroupInvite += guid
-    logger.info(s"PLAYER INVITATION: added $guid to the queue")
-  } else {
-    logger.info(s"DEBUG: Message type 7 does not contain 'camp' or 'invite': '$txt'")
-  }
-
-  // Skip unhandled channel messages unless it's a guild achievement message
-  if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
-    logger.info(s"DEBUG: Skipping unhandled channel message of type $tp")
-    return None
-  }
 
   // Skip GUID again
   msg.byteBuf.skipBytes(8) // skip guid again
@@ -325,6 +310,13 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
     logger.info(s"PLAYER INVITATION: added $guid to the queue")
   }
 
+  // **New Placement Here**
+  // Skip unhandled channel messages unless it's a guild achievement message
+  if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
+    logger.info(s"DEBUG: Skipping unhandled channel message of type $tp")
+    return None
+  }
+
   // Handle guild achievement messages separately
   if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
     handleAchievementEvent(guid, msg.byteBuf.readIntLE)
@@ -334,6 +326,8 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
     Some(ChatMessage(guid, tp, txt, channelName))
   }
 }
+
+
 
 
 
