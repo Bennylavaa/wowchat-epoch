@@ -5,9 +5,9 @@ import java.security.MessageDigest
 import java.util.concurrent.{Executors, TimeUnit}
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashSet
+import scala.collection.mutable.ListBuffer
 
 import wowchat.common._
 import io.netty.buffer.{ByteBuf, PooledByteBufAllocator}
@@ -38,7 +38,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     0x1C, 0x3E, 0x9E, 0xE1, 0x93, 0xC8, 0x8D
   ).map(_.toByte)
   
-
+  override protected val groupMembers = mutable.Map.empty[String, Boolean]
   override protected def parseAuthChallenge(msg: Packet): AuthChallengeMessage = {
     val account = Global.config.wow.account
 
@@ -90,6 +90,56 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     }
 
     NameQueryMessage(guid, name, charClass)
+  }
+  
+  def readString(buf: ByteBuf): String = {
+    val ret = ArrayBuffer.newBuilder[Byte]
+    breakable {
+      while (buf.readableBytes > 0) {
+        val value = buf.readByte
+        if (value == 0) {
+          break
+        }
+        ret += value
+      }
+    }
+    Source.fromBytes(ret.result.toArray, "UTF-8").mkString
+  }
+  protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
+    logger.info(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
+    val groupType = msg.byteBuf.readByte // 0: group, 1: raid
+    msg.byteBuf.skipBytes(1) // flags
+    val memberCount = msg.byteBuf.readIntLE()
+    for (i <- 1 to memberCount) {
+      val name = readString(msg.byteBuf)
+      msg.byteBuf.skipBytes(8) // guid
+      val isOnline = msg.byteBuf.readBoolean
+      msg.byteBuf.skipBytes(1) // flags
+      val cachedOnlineState = groupMembers.get(name)
+      if (Some(isOnline) != cachedOnlineState) {
+        cachedOnlineState match {
+          case Some(true) => {
+            groupMembers(name) = isOnline
+            sendGroupKick(name) // sendResetInstances()
+          }
+          case _  => {
+            groupMembers(name) = isOnline
+          }
+        }
+      }
+      logger.info(s"Member #$i: $name - is online: $isOnline")
+    }
+    val leaderGUID = msg.byteBuf.readBytes(8)
+    val groupLootSetting =
+      msg.byteBuf
+        .readByte() // 0: FFA, 1: RR, 2: ML, 3: Group loot, 4: Need before greed
+    val masterLooterGUID = msg.byteBuf.readBytes(8)
+    val lootQuality = msg.byteBuf.readByte() // 2: uncommon, 3: rare, 4: epic
+    msg.byteBuf.skipBytes(1) // null-termination
+    logger.info(
+      s"leader GUID: ${ByteUtils.toHexString(leaderGUID)}, group loot setting: $groupLootSetting, ml guid: ${ByteUtils
+          .toHexString(masterLooterGUID)}, loot quality: $lootQuality"
+    )
   }
 
   override protected def parseCharEnum(msg: Packet): Option[CharEnumMessage] = {
@@ -160,17 +210,26 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
   }
 
   override protected def sendGroupInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GROUP_INVITE))
+    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GROUP_INVITE, name.toLowerCase()))
+  }
+  override def sendGroupKick(name: String): Unit = {
+    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GROUP_KICK, name.toLowerCase()))
+  }
+  override def sendGroupKickUUID(name_uuid: String): Unit = {
+    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GROUP_KICK_UUID, name_uuid))
   }
   override def sendGuildInvite(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GUILD_INVITE))
+    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GUILD_INVITE, name.toLowerCase()))
   }
   override def sendGuildKick(name: String): Unit = {
-    ctx.get.writeAndFlush(buildSingleStringPacket(name, CMSG_GUILD_REMOVE))
+    ctx.get.writeAndFlush(buildSingleStringPacket(CMSG_GUILD_REMOVE, name.toLowerCase()))
   }
-  protected def buildSingleStringPacket(name: String, opcode: Int): Packet = {
+  override def sendResetInstances(): Unit = {
+    ctx.get.writeAndFlush(Packet(CMSG_RESET_INSTANCES))
+  }
+  protected def buildSingleStringPacket(opcode: Int, string_param: String): Packet = {
     val byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 16)
-    byteBuf.writeBytes(name.toLowerCase.getBytes("UTF-8"))
+    byteBuf.writeBytes(string_param.getBytes("UTF-8"))
     byteBuf.writeByte(0)
     Packet(opcode, byteBuf)
   }
@@ -233,8 +292,8 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     // invite feature:
     if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase().contains("invite"))) {
       playersToGroupInvite += guid
-      logger.debug(s"PLAYER INVITATION: added $guid to the queue")
-      Some(ChatMessage(guid, tp, s"(Sent raid invite to character guid '$guid')", channelName))
+      logger.info(s"PLAYER INVITATION: added $guid to the queue")
+
     }
 	
     if (tp == ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT) {
