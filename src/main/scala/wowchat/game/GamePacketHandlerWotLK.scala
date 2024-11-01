@@ -156,6 +156,16 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
       case unhandled => logger.info(s"Unhandled message ID: $unhandled")
     }
   }
+  
+  private def handle_SMSG_AUTH_CHALLENGE(msg: Packet): Unit = {
+    val authChallengeMessage = parseAuthChallenge(msg)
+
+    ctx.get.channel.attr(CRYPT).get.init(authChallengeMessage.sessionKey)
+
+    ctx.get.writeAndFlush(
+      Packet(CMSG_AUTH_CHALLENGE, authChallengeMessage.byteBuf)
+    )
+  }
 
   override protected def parseAuthChallenge(msg: Packet): AuthChallengeMessage = {
     val account = Global.config.wow.account
@@ -187,6 +197,24 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     out.writeBytes(addonInfo)
 
     AuthChallengeMessage(sessionKey, out)
+  }
+  
+  private def handle_SMSG_AUTH_RESPONSE(msg: Packet): Unit = {
+    val code = parseAuthResponse(msg)
+    if (code == AuthResponseCodes.AUTH_OK) {
+      logger.info("Successfully logged in!")
+      sendCharEnum
+    } else if (code == AuthResponseCodes.AUTH_WAIT_QUEUE) {
+      if (msg.byteBuf.readableBytes() >= 14) {
+        msg.byteBuf.skipBytes(10)
+      }
+      val position = msg.byteBuf.readIntLE
+      logger.info(s"Queue enabled. Position: $position")
+    } else {
+      logger.error(AuthResponseCodes.getMessage(code))
+      ctx.foreach(_.close)
+      gameEventCallback.error
+    }
   }
 
   private def handle_SMSG_NAME_QUERY(msg: Packet): Unit = {
@@ -232,6 +260,33 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     NameQueryMessage(guid, name, charClass)
   }
 
+  private def handle_SMSG_CHAR_ENUM(msg: Packet): Unit = {
+    if (receivedCharEnum) {
+      if (inWorld) {
+        // Do not parse char enum again if we've already joined the world.
+        return
+      } else {
+        logger.info(
+          "Received character enum more than once. Trying to join the world again..."
+        )
+      }
+    }
+    receivedCharEnum = true
+    parseCharEnum(msg).fold({
+      logger.error(s"Character ${Global.config.wow.character} not found!")
+    })(character => {
+      logger.info(s"Logging in with character ${character.name}")
+      selfCharacterId = Some(character.guid)
+      languageId = Races.getLanguage(character.race)
+      guildGuid = character.guildGuid
+
+      val out =
+        PooledByteBufAllocator.DEFAULT.buffer(16, 16) // increase to 16 for MoP
+      writePlayerLogin(out)
+      ctx.get.writeAndFlush(Packet(CMSG_PLAYER_LOGIN, out))
+    })
+  }
+
   def readString(buf: ByteBuf): String = {
     val ret = ArrayBuffer.newBuilder[Byte]
     breakable {
@@ -243,20 +298,25 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
         ret += value
       }
     }
+
     Source.fromBytes(ret.result.toArray, "UTF-8").mkString
   }
 
   override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
     logger.info(s"DEBUG: ${ByteUtils.toHexString(msg.byteBuf, true, true)}")
+
     val isRaid = msg.byteBuf.readBoolean() // false: group, true: raid
     if (!isRaid) { groupConvertToRaid(); return }
+
     msg.byteBuf.skipBytes(1) // flags
     val memberCount = msg.byteBuf.readIntLE()
+
     for (i <- 1 to memberCount) {
       val name = readString(msg.byteBuf)
       msg.byteBuf.skipBytes(8) // guid
       val isOnline = msg.byteBuf.readBoolean()
       msg.byteBuf.skipBytes(1) // flags
+
       val cachedOnlineState = groupMembers.get(name)
       if (Some(isOnline) != cachedOnlineState) {
         cachedOnlineState match {
@@ -275,6 +335,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
       }
       logger.info(s"Member #$i: $name - is online: $isOnline")
     }
+
     val leaderGUID = msg.byteBuf.readLongLE()
     val groupLootSetting =
       msg.byteBuf
@@ -282,6 +343,7 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     val masterLooterGUID = msg.byteBuf.readLongLE()
     val lootQuality = msg.byteBuf.readByte() // 2: uncommon, 3: rare, 4: epic
     msg.byteBuf.skipBytes(1) // null-termination
+
     if (groupLootSetting != 0) {updateGroupLootMethod(0); return}
   }
 
@@ -323,6 +385,10 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
     None
   }
 
+  protected def writePlayerLogin(out: ByteBuf): Unit = {
+    out.writeLongLE(selfCharacterId.get)
+  }
+
   private def handle_SMSG_LOGIN_VERIFY_WORLD(msg: Packet): Unit = {
     // for some reason some servers send this packet more than once.
     if (inWorld) {
@@ -361,12 +427,183 @@ class GamePacketHandlerWotLK(realmId: Int, realmName: String, sessionKey: Array[
       }
   }
 
-  override protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
+  protected def writeJoinChannel(
+      out: ByteBuf,
+      id: Int,
+      utf8ChannelBytes: Array[Byte]
+  ): Unit = {
+    out.writeBytes(utf8ChannelBytes)
+    out.writeByte(0)
+    out.writeByte(0)
+  }
+
+  private def handle_SMSG_GUILD_QUERY(msg: Packet): Unit = {
+    guildInfo = handleGuildQuery(msg)
+  }
+
+  protected def handleGuildQuery(msg: Packet): GuildInfo = {
+    msg.byteBuf.skipBytes(4)
+    val name = msg.readString
+
+    val ranks = (0 until 10)
+      .map(_ -> msg.readString)
+      .filter { case (_, name) =>
+        name.nonEmpty
+      }
+      .toMap
+
+    GuildInfo(name, ranks)
+  }
+
+  private def handle_SMSG_GUILD_EVENT(msg: Packet): Unit = {
+    val event = msg.byteBuf.readByte
+    val numStrings = msg.byteBuf.readByte
+    val messages = (0 until numStrings).map(i => msg.readString)
+
+    handleGuildEvent(event, messages)
+  }
+
+  protected def handleGuildEvent(event: Byte, messages: Seq[String]): Unit = {
+    // ignore empty messages
+    if (messages.forall(_.trim.isEmpty)) {
+      return
+    }
+
+    // ignore events from self
+    if (
+      event != GuildEvents.GE_MOTD && Global.config.wow.character
+        .equalsIgnoreCase(messages.head)
+    ) {
+      return
+    }
+
+    val eventConfigKey = event match {
+      case GuildEvents.GE_PROMOTED   => "promoted"
+      case GuildEvents.GE_DEMOTED    => "demoted"
+      case GuildEvents.GE_MOTD       => "motd"
+      case GuildEvents.GE_JOINED     => "joined"
+      case GuildEvents.GE_LEFT       => "left"
+      case GuildEvents.GE_REMOVED    => "removed"
+      case GuildEvents.GE_SIGNED_ON  => "online"
+      case GuildEvents.GE_SIGNED_OFF => "offline"
+      case _                         => return
+    }
+
+    val guildNotificationConfig =
+      Global.config.guildConfig.notificationConfigs(eventConfigKey)
+
+    if (guildNotificationConfig.enabled) {
+      val formatted = event match {
+        case GuildEvents.GE_PROMOTED | GuildEvents.GE_DEMOTED =>
+          guildNotificationConfig.format
+            .replace("%time", Global.getTime)
+            .replace("%user", messages.head)
+            .replace("%message", messages.head)
+            .replace("%target", messages(1))
+            .replace("%rank", messages(2))
+        case GuildEvents.GE_REMOVED =>
+          guildNotificationConfig.format
+            .replace("%time", Global.getTime)
+            .replace("%user", messages(1))
+            .replace("%message", messages(1))
+            .replace("%target", messages.head)
+        case _ =>
+          guildNotificationConfig.format
+            .replace("%time", Global.getTime)
+            .replace("%user", messages.head)
+            .replace("%message", messages.head)
+      }
+
+      Global.discord.sendGuildNotification(eventConfigKey, formatted)
+    }
+
+    updateGuildRoster
+  }
+
+  private def handle_SMSG_GUILD_ROSTER(msg: Packet): Unit = {
+    guildRoster.clear
+    guildRoster ++= parseGuildRoster(msg)
+    updateGuildiesOnline
+  }
+
+  protected def parseGuildRoster(msg: Packet): Map[Long, GuildMember] = {
+    val count = msg.byteBuf.readIntLE
+    guildMotd = Some(msg.readString)
+    val ginfo = msg.readString
+    val rankscount = msg.byteBuf.readIntLE
+    (0 until rankscount).foreach(i => msg.byteBuf.skipBytes(4))
+    (0 until count)
+      .map(i => {
+        val guid = msg.byteBuf.readLongLE
+        val isOnline = msg.byteBuf.readBoolean
+        val name = msg.readString
+        msg.byteBuf.skipBytes(4) // guild rank
+        val level = msg.byteBuf.readByte
+        val charClass = msg.byteBuf.readByte
+        val zoneId = msg.byteBuf.readIntLE
+        val lastLogoff = if (!isOnline) {
+          msg.byteBuf.readFloatLE
+        } else {
+          0
+        }
+        msg.skipString
+        msg.skipString
+
+        guid -> GuildMember(
+          name,
+          isOnline,
+          charClass,
+          level,
+          zoneId,
+          lastLogoff
+        )
+      })
+      .toMap
+  }
+
+  protected def handle_SMSG_MESSAGECHAT(msg: Packet): Unit = {
+    logger.debug(
+      s"RECV CHAT: ${ByteUtils.toHexString(msg.byteBuf, true, true)}"
+    )
+    parseChatMessage(msg).foreach(sendChatMessage)
+  }
+
+  protected def handle_SMSG_PARTY_COMMAND_RESULT(msg: Packet): Unit = {
     val reply = ByteUtils.toHexString(msg.byteBuf, true, true)
     logger.info(s"RECV PARTY COMMAND RESULT: ${reply}")
+
     // We get this reply when we don't have rights to invite others
     if (reply == "00 00 00 00 00 06 00 00 00") {
       groupDisband()
+    }
+  }
+
+  protected def sendChatMessage(chatMessage: ChatMessage): Unit = {
+    if (chatMessage.guid == 0) {
+      Global.discord.sendMessageFromWow(
+        None,
+        chatMessage.message,
+        chatMessage.tp,
+        None
+      )
+    } else {
+      playerRoster
+        .get(chatMessage.guid)
+        .fold({
+          queuedChatMessages
+            .get(chatMessage.guid)
+            .fold({
+              queuedChatMessages += chatMessage.guid -> ListBuffer(chatMessage)
+              sendNameQuery(chatMessage.guid)
+            })(_ += chatMessage)
+        })(name => {
+          Global.discord.sendMessageFromWow(
+            Some(name.name),
+            chatMessage.message,
+            chatMessage.tp,
+            chatMessage.channel
+          )
+        })
     }
   }
 
