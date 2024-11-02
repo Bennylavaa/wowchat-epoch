@@ -199,13 +199,13 @@ override protected def handle_SMSG_GROUP_LIST(msg: Packet): Unit = {
 override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   // Read the type of chat message
   val tp = msg.byteBuf.readByte
-  logger.info(s"DEBUG: tp value is $tp")  // Log the message type
+  logger.debug(s"DEBUG: tp value is $tp")  // Log the message type
 
   // Read the language identifier
   val lang = msg.byteBuf.readIntLE
   // Ignore addon messages
   if (lang == -1) {
-    logger.info("DEBUG: Skipping addon message due to lang == -1")
+    logger.debug("DEBUG: Skipping addon message due to lang == -1")
     return None
   }
 
@@ -213,7 +213,7 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   val guid = msg.byteBuf.readLongLE
   // Ignore messages from itself, unless it is a system message
   if (tp != ChatEvents.CHAT_MSG_SYSTEM && guid == selfCharacterId.get) {
-    logger.info(s"DEBUG: Skipping message from self, guid: $guid")
+    logger.debug(s"DEBUG: Skipping message from self, guid: $guid")
     return None
   }
 
@@ -235,15 +235,15 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
 
   // Skip GUID again
   msg.byteBuf.skipBytes(8) // skip guid again
-  logger.info(s"DEBUG: Buffer readable bytes after guid skip: ${msg.byteBuf.readableBytes()}")
+  logger.debug(s"DEBUG: Buffer readable bytes after guid skip: ${msg.byteBuf.readableBytes()}")
 
   // Read text length
   val txtLen = msg.byteBuf.readIntLE
-  logger.info(s"DEBUG: txtLen value is $txtLen")
+  logger.debug(s"DEBUG: txtLen value is $txtLen")
 
   // Read the text message from the buffer
   val txt = msg.byteBuf.readCharSequence(txtLen - 1, Charset.forName("UTF-8")).toString
-  logger.info(s"DEBUG: Parsed txt value is '$txt'")
+  logger.debug(s"DEBUG: Parsed txt value is '$txt'")
 
   // Skip the null terminator and chat tag
   msg.byteBuf.skipBytes(1) // null terminator
@@ -252,12 +252,12 @@ override protected def parseChatMessage(msg: Packet): Option[ChatMessage] = {
   // Check for whispers containing 'camp' or 'invite'
   if (tp == ChatEvents.CHAT_MSG_WHISPER && (txt.toLowerCase.contains("camp") || txt.toLowerCase.contains("invite"))) {
     playersToGroupInvite += guid
-    logger.info(s"PLAYER INVITATION: added $guid to the queue")
+    logger.debug(s"PLAYER INVITATION: added $guid to the queue")
   }
 
   // Skip unhandled channel messages unless it's a guild achievement message
   if (tp != ChatEvents.CHAT_MSG_GUILD_ACHIEVEMENT && !Global.wowToDiscord.contains((tp, channelName.map(_.toLowerCase)))) {
-    logger.info(s"DEBUG: Skipping unhandled channel message of type $tp")
+    logger.debug(s"DEBUG: Skipping unhandled channel message of type $tp")
     return None
   }
 
