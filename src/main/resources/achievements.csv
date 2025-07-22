@@ -382,7 +382,6 @@
 970,Tricks and Treats of Azeroth
 971,Tricks and Treats of Azeroth
 972,Trick or Treat!
-973,5 Daily Quests Complete
 974,50 Daily Quests Complete
 975,200 Daily Quests Complete
 976,500 Daily Quests Complete
@@ -569,7 +568,6 @@
 1547,Dalaran Sewers matches
 1548,Dalaran Sewers victories
 1552,Frenzied Firecracker
-1556,25 Fish
 1557,50 Fish
 1558,100 Fish
 1559,250 Fish
@@ -579,8 +577,6 @@
 1637,Spirit of Competition
 1656,Hallowed Be Thy Name
 1657,Hallowed Be Thy Name
-1677,Loremaster of Eastern Kingdoms
-1680,Loremaster of Kalimdor
 1682,The Loremaster
 1685,Bros. Before Ho Ho Ho's
 1686,Bros. Before Ho Ho Ho's
@@ -635,7 +631,6 @@
 2019,Proof of Demise
 2079,Tabard of the Protector
 2081,Grand Black War Mammoth
-2116,Tabard of the Argent Dawn
 2141,Stable Keeper
 2142,Filling Up The Barn
 2143,Leading the Cavalry
@@ -714,114 +709,192 @@
 4786,Operation: Gnomeregan
 4790,Zalazane's Fall
 4824,Collector's Edition: Mini Thor
-4900,Soul of Iron
-4902,Battle for Hillsbrad: Assault
-4903,Battle for Hillsbrad: Defense
-4906,Beta One Tester
-4908,Explorer's Contract: Artisan
-4909,Explorer's Contract: Apprentice
-4910,Explorer's Contract: Journeyman
-4911,Explorer's Contract: Expert
-4912,Glittermurk Mines
-4913,Stratholme: Service Gate
-4914,Raceway License
-4915,Podium Placement
-4916,Winner Winner Chicken Dinner
-4917,Bronze Award
-4918,Silver Trophy
-4919,Gold Trophy
-4920,Bloodthirsty
-4924,Beta Two Tester
-4925,Attunement to the Core
-4926,Loremaster of Eastern Kingdoms
-4927,Loremaster of Kalimdor
-4928,The Loremaster
-4929,Lorewalker of Elwynn Forest
-4933,Lorewalker of Westfall
-4936,Loremaster of Eastern Kingdoms
-4937,Loremaster of Kalimdor
-4938,The Loremaster
-4939,Lorewalker of Tanaris
-4941,Lorewalker of Tanaris
-4943,Lorewalker of Alterac Mountains
-4944,Lorewalker of Arathi Highlands
-4945,Lorewalker of Ashenvale
-4946,Lorewalker of Azshara
-4947,Lorewalker of Badlands
-4948,Lorewalker of Blasted Lands
-4949,Lorewalker of Burning Steppes
-4950,Lorewalker of Darkshore
-4951,Lorewalker of Desolace
-4952,Lorewalker of Dun Morogh
-4953,Lorewalker of Duskwood
-4954,Lorewalker of Dustwallow Marsh
-4955,Lorewalker of Eastern Plaguelands
-4956,Lorewalker of Felwood
-4957,Lorewalker of Feralas
-4958,Lorewalker of Hillsbrad Foothills
-4959,Lorewalker of Loch Modan
-4960,Lorewalker of Redridge Mountains
-4961,Lorewalker of Searing Gorge
-4962,Lorewalker of Stonetalon Mountains
-4963,Lorewalker of Stranglethorn Vale
-4964,Lorewalker of Swamp of Sorrows
-4965,Lorewalker of Teldrassil
-4966,Lorewalker of The Barrens
-4967,Lorewalker of The Hinterlands
-4968,Lorewalker of Thousand Needles
-4969,Lorewalker of Un'Goro Crater
-4970,Lorewalker of Western Plaguelands
-4971,Lorewalker of Wetlands
-4972,Lorewalker of Winterspring
-4973,Lorewalker of Alterac Mountains
-4974,Lorewalker of Arathi Highlands
-4975,Lorewalker of Ashenvale
-4976,Lorewalker of Azshara
-4977,Lorewalker of Badlands
-4978,Lorewalker of Blasted Lands
-4979,Lorewalker of Burning Steppes
-4980,Lorewalker of Desolace
-4981,Lorewalker of Durotar
-4982,Lorewalker of Dustwallow Marsh
-4983,Lorewalker of Eastern Plaguelands
-4984,Lorewalker of Felwood
-4985,Lorewalker of Feralas
-4986,Lorewalker of Hillsbrad Foothills
-4987,Lorewalker of Mulgore
-4988,Lorewalker of Searing Gorge
-4989,Lorewalker of Silverpine Forest
-4990,Lorewalker of Stonetalon Mountains
-4991,Lorewalker of Stranglethorn Vale
-4992,Lorewalker of Swamp of Sorrows
-4993,Lorewalker of The Barrens
-4994,Lorewalker of The Hinterlands
-4995,Lorewalker of Thousand Needles
-4996,Lorewalker of Tirisfal Glades
-4997,Lorewalker of Un'Goro Crater
-4998,Lorewalker of Western Plaguelands
-4999,Lorewalker of Winterspring
-5000,The Veiled Blade
-5001,The Veiled Blade
-5002,TRACKING - Dungeon Set Starbreeze Relic
-5003,TRACKING - Dungeon Set Purgation Isle
-5004,TRACKING - Dungeon Set Tyrs Hand
-5005,TRACKING - Dungeon Set Azshara
-5006,Blackmaw Angler
-5007,Deaths in Molten Core
-5008,Deaths in Onyxia's Lair
-5009,Captain Blackstone kills (Baradin Hold)
-5010,Total boops
-5011,Total dabs
-5012,Broodmother's Lair
-5013,Playing with Balefire
-5014,Good Samaritan
-5015,Ghostly Visitation
-5016,Elemental Showdown
-5017,Baradin Hold
-5018,Epic Requirement: Pure Leveller
-5019,Common Requirement: Simple Leveller
-5020,Common Requirement: Basic Dungeoneer
-5021,Common Requirement: Advanced Dungeoneer
-5022,Common Requirement: Professional Tester
-5023,Beta Three Tester
-5024,Epic Requirement: Ortorg Slayer
+4900,Beta One Tester
+4901,Beta Two Tester
+4902,Beta Three Tester
+4903,Blackmaw Angler
+4904,Rite of the Depths
+4905,Plenty of Fish in the Sea
+4906,Fishing Freelancer
+4907,Fishing Freelancer
+4908,Fishing Mastery
+4909,Fishing Mastery
+4910,Accomplished Angler
+4911,Deaths in Molten Core
+4912,Broodmother's Lair
+4913,Deaths in Onyxia's Lair
+4914,Captain Blackstone kills (Baradin Hold)
+4915,Playing with Balefire
+4916,Good Samaritan
+4917,Ghostly Visitation
+4918,Elemental Showdown
+4919,The Numismatist
+4920,Rite of the Laboratory
+4921,Alchemy Workhorse
+4922,Alchemy Freelancer
+4923,Alchemy Freelancer
+4924,Alchemy Mastery
+4925,Alchemy Mastery
+4926,Rite of the Forge
+4927,Blacksmithing Workhorse
+4928,Blacksmithing Freelancer
+4929,Blacksmithing Freelancer
+4930,Blacksmithing Mastery
+4931,Blacksmithing Mastery
+4932,Rite of the Fire
+4933,Cooking Workhorse
+4934,The Eastern Kingdoms Gourmet
+4935,The Kalimdor Gourmet
+4936,Cooking Freelancer
+4937,Cooking Freelancer
+4938,Cooking Mastery
+4939,Cooking Mastery
+4940,Rite of the Arcane
+4941,Enchanting Workhorse
+4942,Enchanting Freelancer
+4943,Enchanting Freelancer
+4944,Enchanting Mastery
+4945,Enchanting Mastery
+4946,Rite of the Workshop
+4947,Engineering Workhorse
+4948,Engineering Freelancer
+4949,Engineering Freelancer
+4950,Engineering Mastery
+4951,Engineering Mastery
+4952,Stocking Up
+4953,Rite of the Medicant
+4954,First Aid Freelancer
+4955,First Aid Freelancer
+4956,First Aid Mastery
+4957,First Aid Mastery
+4958,Rite of the Fields
+4959,Herbalism Workhorse
+4960,Herbalism Freelancer
+4961,Herbalism Freelancer
+4962,Herbalism Mastery
+4963,Herbalism Mastery
+4964,Rite of the Hunt
+4965,Leatherworking Workhorse
+4966,Leatherworking Freelancer
+4967,Leatherworking Freelancer
+4968,Leatherworking Mastery
+4969,Leatherworking Mastery
+4970,Rite of the Mountains
+4971,Mining Workhorse
+4972,Mining Freelancer
+4973,Mining Freelancer
+4974,Mining Mastery
+4975,Mining Mastery
+4976,Rite of the Wilds
+4977,Skinning Workhorse
+4978,Skinning Freelancer
+4979,Skinning Freelancer
+4980,Skinning Mastery
+4981,Skinning Mastery
+4982,Rite of the Loom
+4983,Tailoring Workhorse
+4984,Tailoring Freelancer
+4985,Tailoring Freelancer
+4986,Tailoring Mastery
+4987,Tailoring Mastery
+4988,Battle for Hillsbrad: Assault
+4989,Battle for Hillsbrad: Defense
+4990,The Veiled Blade
+4991,The Veiled Blade
+4992,Total boops
+4993,Total dabs
+4994,Glittermurk Mines
+4995,Attunement to the Core
+4996,Stratholme: Service Gate
+4997,Baradin Hold
+4998,Parleyed with a Pirate
+4999,Awkward Tiger Movie
+5000,Sandpiper Michigan Shipwreck
+5001,Juliet Florida Tango
+5002,Bloodthirsty
+5003,TRACKING - Dungeon Set Starbreeze Relic
+5004,TRACKING - Dungeon Set Purgation Isle
+5005,TRACKING - Dungeon Set Tyrs Hand
+5006,TRACKING - Dungeon Set Azshara
+5007,Raceway License
+5008,Podium Placement
+5009,Winner Winner Chicken Dinner
+5010,Bronze Award
+5011,Silver Trophy
+5012,Gold Trophy
+5013,Explorer's Contract: Apprentice
+5014,Explorer's Contract: Expert
+5015,Explorer's Contract: Artisan
+5016,Soul of Iron: Apprentice
+5017,Soul of Iron: Expert
+5018,Soul of Iron: Artisan
+5019,Loremaster of Eastern Kingdoms
+5020,Loremaster of Kalimdor
+5021,The Loremaster
+5022,Lorewalker of Alterac Mountains
+5023,Lorewalker of Arathi Highlands
+5024,Lorewalker of Ashenvale
+5025,Lorewalker of Azshara
+5026,Lorewalker of Badlands
+5027,Lorewalker of Blasted Lands
+5028,Lorewalker of Burning Steppes
+5029,Lorewalker of Darkshore
+5030,Lorewalker of Desolace
+5031,Lorewalker of Dun Morogh
+5032,Lorewalker of Duskwood
+5033,Lorewalker of Dustwallow Marsh
+5034,Lorewalker of Eastern Plaguelands
+5035,Lorewalker of Elwynn Forest
+5036,Lorewalker of Felwood
+5037,Lorewalker of Feralas
+5038,Lorewalker of Hillsbrad Foothills
+5039,Lorewalker of Loch Modan
+5040,Lorewalker of Redridge Mountains
+5041,Lorewalker of Searing Gorge
+5042,Lorewalker of Stonetalon Mountains
+5043,Lorewalker of Stranglethorn Vale
+5044,Lorewalker of Swamp of Sorrows
+5045,Lorewalker of Tanaris
+5046,Lorewalker of Teldrassil
+5047,Lorewalker of The Barrens
+5048,Lorewalker of The Hinterlands
+5049,Lorewalker of Thousand Needles
+5050,Lorewalker of Un'Goro Crater
+5051,Lorewalker of Western Plaguelands
+5052,Lorewalker of Westfall
+5053,Lorewalker of Wetlands
+5054,Lorewalker of Winterspring
+5055,Loremaster of Eastern Kingdoms
+5056,Loremaster of Kalimdor
+5057,The Loremaster
+5058,Lorewalker of Alterac Mountains
+5059,Lorewalker of Arathi Highlands
+5060,Lorewalker of Ashenvale
+5061,Lorewalker of Azshara
+5062,Lorewalker of Badlands
+5063,Lorewalker of Blasted Lands
+5064,Lorewalker of Burning Steppes
+5065,Lorewalker of Desolace
+5066,Lorewalker of Durotar
+5067,Lorewalker of Dustwallow Marsh
+5068,Lorewalker of Eastern Plaguelands
+5069,Lorewalker of Felwood
+5070,Lorewalker of Feralas
+5071,Lorewalker of Hillsbrad Foothills
+5072,Lorewalker of Mulgore
+5073,Lorewalker of Searing Gorge
+5074,Lorewalker of Silverpine Forest
+5075,Lorewalker of Stonetalon Mountains
+5076,Lorewalker of Stranglethorn Vale
+5077,Lorewalker of Swamp of Sorrows
+5078,Lorewalker of Tanaris
+5079,Lorewalker of The Barrens
+5080,Lorewalker of The Hinterlands
+5081,Lorewalker of Thousand Needles
+5082,Lorewalker of Tirisfal Glades
+5083,Lorewalker of Un'Goro Crater
+5084,Lorewalker of Western Plaguelands
+5085,Lorewalker of Winterspring
+5086,Pre-Release Bundle
+5087,The Thorium Brotherhood
+5088,Valor's Expedition
